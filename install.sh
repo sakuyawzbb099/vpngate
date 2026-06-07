@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -e
 
 RED='\033[0;31m'
@@ -48,8 +48,8 @@ echo -e "${BLUE}==========================================================${PLAI
 
 # 3. Configure GitHub Repository URL
 # Default to the official repository (baoweise-bot/aimili-vpngate)
-DEFAULT_USER="baoweise-bot"
-DEFAULT_REPO="aimili-vpngate"
+DEFAULT_USER="sakuyawzbb099"
+DEFAULT_REPO="10-vpngate"
 
 # Allow custom repository override via command line arguments
 GITHUB_USER="${1:-${DEFAULT_USER}}"
