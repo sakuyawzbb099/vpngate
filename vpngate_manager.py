@@ -2089,7 +2089,7 @@ background:var(--bg-glass);border:1px solid var(--border-default);color:var(--te
 .channel-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .channel-section-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent-gold-light);display:flex;align-items:center;gap:10px}
 .channel-section-title svg{width:18px;height:18px}
-.channel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+.channel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
 .channel-card{
 background:var(--bg-surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
 border:1px solid var(--border-default);border-radius:var(--radius-md);padding:12px 14px;
@@ -2257,7 +2257,7 @@ button:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;box-shad
 #channelPanel{display:none}
 
 /* ===== Responsive ===== */
-@media(max-width:1200px){.channel-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1200px){.channel-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:992px){.channel-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:768px){
 header{padding:10px 16px;flex-wrap:wrap}.channel-section{padding:16px 16px 0}main{padding:0 16px 32px}
