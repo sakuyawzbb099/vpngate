@@ -1207,7 +1207,7 @@ test_indexes_lock = threading.Lock()
 
 def get_free_test_index() -> int:
     with test_indexes_lock:
-        for idx in range(2, 100):
+        for idx in range(MAX_CHANNELS + 2, 100):
             if idx not in active_test_indexes:
                 active_test_indexes.add(idx)
                 return idx
