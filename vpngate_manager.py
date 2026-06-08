@@ -56,8 +56,8 @@ class DualStackHTTPServer(ThreadingHTTPServer):
         except OSError as e:
             if self.address_family == socket.AF_INET6:
                 fallback_host = "0.0.0.0" if host in ("::", "") else "127.0.0.1"
-                print(f"[警告] 绑定 Web 管理后台 IPv6 {host}:{port} 失败 ({e})，正在尝试回退至 IPv4 {fallback_host} ...", flush=True)
-                # 关闭第一次失败时可能已创建的 socket
+                print(f"[閻犫偓閿曗偓閹差摚 缂備焦鍨甸悾?Web 缂佺媴绱曢幃濠囧触鎼粹€抽叡 IPv6 {host}:{port} 濠㈡儼绮剧憴?({e})闁挎稑鏈婊堝捶閵娿儳姣﹂悹鍥ㄦ礀濞叉牠鏌呴埀顒勬嚊?IPv4 {fallback_host} ...", flush=True)
+                # 闁稿繑濞婂Λ瀵哥箔椤戣法顏辨繛鍡忊偓鐐戒杭閻犳劑鍎插鍌炲矗椤栨繂鍘寸€瑰憡褰冮崹鍗烆嚈閾忚鐣?socket
                 try:
                     self.socket.close()
                 except Exception:
@@ -83,13 +83,13 @@ def env_int(name: str, default: int, min_value: int | None = None, max_value: in
     try:
         value = int(raw) if raw not in (None, "") else default
     except (TypeError, ValueError):
-        print(f"[配置警告] 环境变量 {name}={raw!r} 不是有效整数，使用默认值 {default}", flush=True)
+        print(f"[闂佹澘绉堕悿鍡欐媰閿曗偓閹差摚 闁绘粠鍨伴。銊╁矗濮椻偓閸?{name}={raw!r} 濞戞挸绉靛Σ鎼佸嫉婢跺娅忛柡浣哥摠閺嗙喖鏁嶇仦鐓庘枏闁活潿鍔戠划顖滄媼閵堝應鍋?{default}", flush=True)
         value = default
     if min_value is not None and value < min_value:
-        print(f"[配置警告] 环境变量 {name}={value} 小于允许值 {min_value}，使用默认值 {default}", flush=True)
+        print(f"[闂佹澘绉堕悿鍡欐媰閿曗偓閹差摚 闁绘粠鍨伴。銊╁矗濮椻偓閸?{name}={value} 閻忓繐绻嬬花顒勫礂娴ｇ瓔鍟呴柛?{min_value}闁挎稑濂旀繛鍥偨閵娾晝甯涢悹浣靛€曢埀?{default}", flush=True)
         return default
     if max_value is not None and value > max_value:
-        print(f"[配置警告] 环境变量 {name}={value} 大于允许值 {max_value}，使用默认值 {default}", flush=True)
+        print(f"[闂佹澘绉堕悿鍡欐媰閿曗偓閹差摚 闁绘粠鍨伴。銊╁矗濮椻偓閸?{name}={value} 濠㈠爢鍌滆壘闁稿繋娴囬蹇涘磹?{max_value}闁挎稑濂旀繛鍥偨閵娾晝甯涢悹浣靛€曢埀?{default}", flush=True)
         return default
     return value
 
@@ -171,7 +171,7 @@ def upstream_proxy_auth_file() -> str | None:
             pass
         return str(UPSTREAM_PROXY_AUTH_FILE)
     except Exception as exc:
-        print(f"[上游代理认证] 写入认证文件失败: {exc}", flush=True)
+        print(f"[濞戞挸锕ラ悥鑸电閿濆洦鍊為悹浣靛€涢惁濉?闁告劖鐟ラ崣鍡欐媼閵堝牏妲堥柡鍌氭矗濞嗐垺寰勬潏顐バ? {exc}", flush=True)
         return None
 
 def write_json(path: Path, data: Any) -> None:
@@ -277,7 +277,7 @@ def load_ui_config() -> dict[str, Any]:
                 
         return config
 
-# 初始化时优先从 ui_auth.json 加载保存的代理出站端口和网页端口配置以覆盖环境变量
+# 闁告帗绻傞～鎰板礌閺嶃劍顦уù鍏济崢娑欑?ui_auth.json 闁告梻濮惧ù鍥ㄧ┍濠靛棛鎽犻柣銊ュ閸烆剟鎮堕崱妤€姣夌紒鏃€鐟ч顒勫矗閿濆懏瀚茬紓鍐╁灴閵嗗绮╅姘稉闂佹澘绉堕悿鍡樼閵夘煈娲柣鈺傜墱楠炲棙鏅堕崘銊ョ秮闂?
 try:
     _init_cfg = load_ui_config()
     if "proxy_port" in _init_cfg:
@@ -315,13 +315,13 @@ def cleanup_old_logs(logs_dir: Path) -> None:
                     if today_time - file_time >= three_days_sec:
                         with lock:
                             path.unlink()
-                        print(f"[清理] 已删除3天前的旧日志文件: {path.name}", flush=True)
+                        print(f"[婵炴挸鎳愰幃濂?鐎瑰憡褰冮崹褰掓⒔?濠㈠灈鏅涙晶鐘绘儍閸曨剚锛嬮柡鍐﹀劚缁绘棃寮崶锔筋偨: {path.name}", flush=True)
                 except Exception:
                     if now - path.stat().st_mtime > three_days_sec:
                         with lock:
                             path.unlink()
     except Exception as e:
-        print(f"[清理错误] 清理旧日志失败: {e}", flush=True)
+        print(f"[婵炴挸鎳愰幃濠囨煥濞嗘帩鍤朷 婵炴挸鎳愰幃濠囧籍瑜庡Λ鈺勭疀濡も偓閵囨垹鎷? {e}", flush=True)
 
 def log_to_json(level: str, module: str, message: str) -> None:
     try:
@@ -408,7 +408,7 @@ def clear_active_connection_state(message: str) -> None:
     set_state(
         active_openvpn_node_id="",
         is_connecting=False,
-        active_node_latency="无活动连接",
+        active_node_latency="闁哄啰濮靛鍧楀礉閵娿劎绠鹃柟?,
         last_check_message=message,
     )
 
@@ -642,11 +642,11 @@ def fetch_api_text(url: str | None = None, use_ssl_verify: bool = True) -> str:
     ptype, phost, pport = vpn_utils.get_upstream_proxy()
     if ptype and phost and pport:
         try:
-            print(f"[fetch_api_text] 监测到上游代理 ({ptype}://{phost}:{pport})，尝试通过代理获取 API...", flush=True)
+            print(f"[fetch_api_text] 闁烩晜鍨剁粊鎾礆妫颁胶鐟愭繛鎾绘櫜閸烆剟鎮?({ptype}://{phost}:{pport})闁挎稑鑻惃鍓ф嫚閺団懇鍋撳宕囩畺濞寸媴绲块幃濠囨嚔瀹勬澘绲?API...", flush=True)
             return fetch_api_text_via_proxy(url, ptype, phost, pport, use_ssl_verify)
         except Exception as e:
-            print(f"[fetch_api_text] 通过代理获取 API 失败: {e}，尝试使用直连/默认系统代理...", flush=True)
-            log_to_json("WARNING", "Main", f"使用代理 {ptype}://{phost}:{pport} 获取 API 失败: {e}")
+            print(f"[fetch_api_text] 闂侇偅淇虹换鍐╃閿濆洦鍊為柤鎯у槻瑜?API 濠㈡儼绮剧憴? {e}闁挎稑鑻惃鍓ф嫚閺囨艾鈻忛柣顫妿濞叉寧娼?濮掓稒顭堥鑽ゅ寲閼姐倗鍩犲ù鐙呯悼閹?..", flush=True)
+            log_to_json("WARNING", "Main", f"濞达綀娉曢弫銈嗙閿濆洦鍊?{ptype}://{phost}:{pport} 闁兼儳鍢茶ぐ?API 濠㈡儼绮剧憴? {e}")
 
     request = urllib.request.Request(
         url,
@@ -751,11 +751,11 @@ def fetch_candidates() -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
     seen_ips = set()
     
-    # 检查本地是否有节点缓存，以确定最大重试尝试次数
+    # 婵☆偀鍋撻柡灞诲劜濠€浼村捶閻楀牊笑闁告熬闄勫﹢渚€鎳為崒婊冧化缂傚倹鎸搁悺銊╂晬鐏為棿绨扮痪顓у枛閻ｉ箖寮甸埀顒佸緞瑜旈崳鍝ユ嫚閺囩偟姣﹂悹鍥ㄦ礃椤愬ジ寮?
     has_cache = len(cached_nodes()) > 0
     max_attempts = 1 if has_cache else 2
     
-    # 尝试 URLs 队列: 1. HTTPS(验证证书) 2. HTTPS(不验证证书) 3. HTTP
+    # 閻忓繑绻嗛惁?URLs 闂傚啰鍠庨崹? 1. HTTPS(濡ょ姴鐭侀惁澶屾嫚娴ｅ嘲濮? 2. HTTPS(濞戞挸绉归悰娆戞嫚娴ｇ晫妲堝☉? 3. HTTP
     attempts_targets = [
         (API_URL, True),
         (API_URL, False)
@@ -763,7 +763,7 @@ def fetch_candidates() -> list[dict[str, Any]]:
     if API_URL.startswith("https://"):
         attempts_targets.append((API_URL.replace("https://", "http://"), True))
         
-    log_to_json("INFO", "Main", "开始拉取官方 API 节点列表...")
+    log_to_json("INFO", "Main", "鐎殿喒鍋撳┑顔碱儐婵椽宕ｉ弽褏鏆柡?API 闁煎搫鍊婚崑锝夊礆濡ゅ嫨鈧?..")
     
     last_err = None
     for url, verify_ssl in attempts_targets:
@@ -771,7 +771,7 @@ def fetch_candidates() -> list[dict[str, Any]]:
             if i > 0:
                 time.sleep(1.5)
             try:
-                msg = f"尝试拉取 {url} (SSL验证: {verify_ssl}, 第 {i+1} 次尝试)..."
+                msg = f"閻忓繑绻嗛惁顖炲箯婢跺﹤绲?{url} (SSL濡ょ姴鐭侀惁? {verify_ssl}, 缂?{i+1} 婵炲棌鈧磭姣﹂悹?..."
                 print(f"[fetch_candidates] {msg}", flush=True)
                 log_to_json("INFO", "Main", msg)
                 api_text = fetch_api_text(url, verify_ssl)
@@ -787,8 +787,8 @@ def fetch_candidates() -> list[dict[str, Any]]:
                         config_text = decode_config(encoded)
                         node = row_to_node(row, config_text)
                     except Exception as row_exc:
-                        print(f"[fetch_candidates] 跳过损坏的节点配置记录: {row_exc}", flush=True)
-                        log_to_json("WARNING", "Main", f"跳过损坏的节点配置记录: {row_exc}")
+                        print(f"[fetch_candidates] 閻犲搫鐤囩换鍐箲閻旈攱缍庨柣銊ュ婵☆參鎮欒ぐ鎺戝赋缂傚喚鍠涢鍥亹? {row_exc}", flush=True)
+                        log_to_json("WARNING", "Main", f"閻犲搫鐤囩换鍐箲閻旈攱缍庨柣銊ュ婵☆參鎮欒ぐ鎺戝赋缂傚喚鍠涢鍥亹? {row_exc}")
                         continue
                     entry = blacklist.get(node["id"])
                     if entry and float(entry.get("until", 0) or 0) > time.time():
@@ -799,16 +799,16 @@ def fetch_candidates() -> list[dict[str, Any]]:
                     break
             except Exception as e:
                 last_err = e
-                print(f"[fetch_candidates] 拉取失败 (URL: {url}, 验证: {verify_ssl}): {e}", flush=True)
-                log_to_json("WARNING", "Main", f"拉取失败 (URL: {url}, 验证: {verify_ssl}): {e}")
+                print(f"[fetch_candidates] 闁瑰嘲顦ぐ鍥ㄥ緞鏉堫偉袝 (URL: {url}, 濡ょ姴鐭侀惁? {verify_ssl}): {e}", flush=True)
+                log_to_json("WARNING", "Main", f"闁瑰嘲顦ぐ鍥ㄥ緞鏉堫偉袝 (URL: {url}, 濡ょ姴鐭侀惁? {verify_ssl}): {e}")
         if candidates:
             break
             
     if not candidates:
         err_code, diag_msg = vpn_utils.diagnose_api_failure(API_URL)
-        full_err_msg = f"获取官方 API 节点最终失败: {last_err} | 诊断结果: {diag_msg}"
-        print(f"[错误代码 {err_code}] {full_err_msg}", flush=True)
-        log_to_json("ERROR", "Main", f"[错误代码 {err_code}] {full_err_msg}")
+        full_err_msg = f"闁兼儳鍢茶ぐ鍥┾偓瑙勆戦弻?API 闁煎搫鍊婚崑锝夊嫉閳ь剛绱掗崼婵勪杭閻? {last_err} | 閻犲洤锕ラ弻鍥╃磼閹惧浜? {diag_msg}"
+        print(f"[闂佹寧鐟ㄩ銈嗙閿濆洨鍨?{err_code}] {full_err_msg}", flush=True)
+        log_to_json("ERROR", "Main", f"[闂佹寧鐟ㄩ銈嗙閿濆洨鍨?{err_code}] {full_err_msg}")
         set_state(
             last_fetch_status="error",
             last_fetch_error_code=err_code,
@@ -825,7 +825,7 @@ def fetch_candidates() -> list[dict[str, Any]]:
         last_fetch_message=f"Fetched {len(candidates)} unique candidates across multiple attempts.",
         blacklisted_nodes=len(blacklist),
     )
-    log_to_json("INFO", "Main", f"成功获取官方 API 节点，共 {len(candidates)} 个候选节点")
+    log_to_json("INFO", "Main", f"闁瑰瓨鍔曟慨娑㈡嚔瀹勬澘绲块悗瑙勆戦弻?API 闁煎搫鍊婚崑锝夋晬鐏炶棄褰?{len(candidates)} 濞戞搩浜滈埀顒佺懇閳ь剙顦虫俊顓㈡倷?)
     return candidates
 
 def cached_nodes() -> list[dict[str, Any]]:
@@ -837,7 +837,7 @@ def split_openvpn_command() -> list[str]:
     try:
         return shlex.split(OPENVPN_CMD, posix=(os.name != "nt")) or ["openvpn"]
     except ValueError as exc:
-        raise RuntimeError(f"OPENVPN_CMD 配置无法解析: {exc}") from exc
+        raise RuntimeError(f"OPENVPN_CMD 闂佹澘绉堕悿鍡涘籍閻樺磭銆婇悷娆欑稻閻? {exc}") from exc
 
 def get_openvpn_version() -> float:
     global _openvpn_version
@@ -985,16 +985,16 @@ def kill_existing_openvpn_processes() -> None:
 
 def update_handshake_status(line_lower: str) -> None:
     status_map = {
-        "resolving": ("解析域名", "正在解析服务器域名与 IP 地址..."),
-        "udp link local": ("物理连接", "已创建本地套接字，开始尝试发送数据包..."),
-        "tcp link local": ("物理连接", "已创建本地套接字，开始尝试发送数据包..."),
-        "tls: initial packet": ("证书握手", "已成功发送首包，正在与远程服务器建立 TLS 安全通道..."),
-        "verify ok": ("证书校验", "服务器证书校验成功，正在进行身份验证..."),
-        "peer connection initiated": ("协商加密", "控制通道已建立，已初始化与服务器的加密对等连接..."),
-        "push_request": ("请求配置", "正在向服务器发送 PUSH_REQUEST 请求配置参数与 IP 分配..."),
-        "push_reply": ("应用配置", "已接收服务器 PUSH_REPLY，获取到 IP 分配，正在准备配置网卡..."),
-        "tun/tap device": ("创建网卡", "正在创建虚拟通道并打开 TUN 虚拟网卡设备..."),
-        "do_ifconfig": ("网卡配置", "正在为虚拟网卡配置 IP 地址及相关网络属性..."),
+        "resolving": ("閻熸瑱绲鹃悗浠嬪春閻旈攱鍊?, "婵繐绲藉﹢顏嗘喆閿濆棛鈧粙寮靛鍛潳闁革絻鍔岄悡娆撳触瀹ュ嫮鐟?IP 闁革附婢樺?.."),
+        "udp link local": ("闁绘せ鏅濋幃濠冩交閻愭潙澶?, "鐎瑰憡褰冮崹鍗烆嚈閻戞ɑ鎷遍柛锔芥緲椤ㄦ粓骞掗妷銉ф憻闁挎稑鑻槐鎴炴叏鐎ｎ亞姣﹂悹鍥ㄦ礀瑜板倿鏌呮担瑙勬闁硅鍠栫€?.."),
+        "tcp link local": ("闁绘せ鏅濋幃濠冩交閻愭潙澶?, "鐎瑰憡褰冮崹鍗烆嚈閻戞ɑ鎷遍柛锔芥緲椤ㄦ粓骞掗妷銉ф憻闁挎稑鑻槐鎴炴叏鐎ｎ亞姣﹂悹鍥ㄦ礀瑜板倿鏌呮担瑙勬闁硅鍠栫€?.."),
+        "tls: initial packet": ("閻犲洣妞掗崝鐔煎箵閳╁啫顤?, "鐎圭寮堕崹姘跺礉閻斿嘲绲洪梺顐＄窔椤╁宕犻崪鍐婵繐绲藉﹢顏呯▔鎼淬倗绠肩紒瀣儐濠€鍥礉閳ヨ櫕鐝ょ€点倛娅ｉ悵?TLS 閻庣懓顦崣蹇涙焻濮樻湹澹?.."),
+        "verify ok": ("閻犲洣妞掗崝鐔煎冀閿熺姷宕?, "闁哄牆绉存慨鐔煎闯閵娿劎妲堝☉鏃撻檮閻楀孩顨ョ仦鎯х亣闁告梻鍣︾槐婵嗩潰閿濆懏韬弶鈺傜椤㈡垿鐓鈥虫暅濡ょ姴鐭侀惁?.."),
+        "peer connection initiated": ("闁告绻愰弲銏ゅ礉閻樿尙妲?, "闁硅矇鍐ㄧ厬闂侇偅宀告禍鎯ь啅閹绘帞绱︾紒鏂款儜缁辨繂顔忛幓鎺戠仴濠殿喖顑呯€靛弶绋夋惔銏＄疀闁告柡鈧櫕鐝ら柣銊ュ婵偟鈧潧妫楅顔剧驳婢跺海绠鹃柟?.."),
+        "push_request": ("閻犲洭鏀遍惇浼存煀瀹ュ洨鏋?, "婵繐绲藉﹢顏堝触閹寸偞绠涢柛鏂衡偓铏彜闁告瑦鍨块埀?PUSH_REQUEST 閻犲洭鏀遍惇浼存煀瀹ュ洨鏋傞柛娆忓€归弳鐔哥▔?IP 闁告帒妫濋崢?.."),
+        "push_reply": ("閹煎瓨姊婚弫銈夋煀瀹ュ洨鏋?, "鐎圭寮剁敮鎾绩閼稿灚绠涢柛鏂衡偓铏彜 PUSH_REPLY闁挎稑鐭侀獮蹇涘矗閺嵮冪厒 IP 闁告帒妫濋崢銈夋晬鐏炵虎鍔€闁革负鍔岄崳顖涘緞閸ヮ剙甯崇紓鍐惧枤缂嶅宕?.."),
+        "tun/tap device": ("闁告帗绋戠紓鎾剁磾閹存繂骞?, "婵繐绲藉﹢顏堝礆濞戞绱﹂柧蹇旂鐎氭瑩鏌呭鏈靛妤犵偠鍩栨晶锕€顕ｉ埀?TUN 闁惧繑纰嶇€氭瑧绱旈幋婵嗗耿閻犱焦鍎抽ˇ?.."),
+        "do_ifconfig": ("缂傚啯鍨靛畷閬嶆煀瀹ュ洨鏋?, "婵繐绲藉﹢顏呯▔妤︽寧鐝撻柟椋庡枔缂嶅宕￠敓鐘插赋缂?IP 闁革附婢樺鍐矗婵犲嫭绁查柛蹇撶－缂嶅绱掑鍐剑闁?.."),
     }
     for key, (short_status, detailed_desc) in status_map.items():
         if key in line_lower:
@@ -1014,9 +1014,9 @@ def run_openvpn_until_ready(config_file: str, keep_alive: bool, route_nopull: bo
             cwd=str(ROOT_DIR),
         )
     except FileNotFoundError:
-        return False, "[错误代码 2001] [ERR_OVPN_CMD_NOT_FOUND] 未找到 openvpn 命令。原因: 系统未安装 openvpn，或 PATH 环境变量不正确。", None
+        return False, "[闂佹寧鐟ㄩ銈嗙閿濆洨鍨?2001] [ERR_OVPN_CMD_NOT_FOUND] 闁哄牜浜濇竟姗€宕?openvpn 闁告稒鍨濋幎銈夊Υ閸屾艾鏂ч柛? 缂侇垵宕电划娲嫉椤忓嫮鏆旈悷?openvpn闁挎稑鏈崹?PATH 闁绘粠鍨伴。銊╁矗濮椻偓閸ｇ儤绋夊鍡╁妧缁绢収鍠撻埀?, None
     except OSError as exc:
-        return False, f"[错误代码 2002] [ERR_OVPN_START_FAILED] openvpn 启动失败: {exc}。原因: 系统权限不足或配置冲突。", None
+        return False, f"[闂佹寧鐟ㄩ銈嗙閿濆洨鍨?2002] [ERR_OVPN_START_FAILED] openvpn 闁告凹鍨版慨鈺傚緞鏉堫偉袝: {exc}闁靛棗鍊哥敮顐﹀炊? 缂侇垵宕电划娲级閸愵喗顎欏☉鎾崇Х閸愬骞嬮弽顓炲赋缂傚喚鍠栭崯璺ㄧ玻娴ｇ鍋?, None
 
     lines: queue.Queue[str | None] = queue.Queue()
     startup_done = [False]
@@ -1089,7 +1089,7 @@ def run_openvpn_until_ready(config_file: str, keep_alive: bool, route_nopull: bo
 
     if not ok:
         err_code, diag_msg = vpn_utils.diagnose_openvpn_failure(tail)
-        message = f"[错误代码 {err_code}] {diag_msg} (原始日志尾部: {tail[-1][-100:] if tail else '无'})"
+        message = f"[闂佹寧鐟ㄩ銈嗙閿濆洨鍨?{err_code}] {diag_msg} (闁告鍠庨～鎰板籍閵夈儳绠堕悘蹇涚畺閸? {tail[-1][-100:] if tail else '闁?})"
     startup_done[0] = True
     if not keep_alive or not ok:
         stop_process(process)
@@ -1138,8 +1138,8 @@ def setup_policy_routing(interface: str = "tun0", table: int = 100, channel_idx:
             time.sleep(1)
             
     if not success:
-        print(f"[路由配置失败] 无法向路由表 {table} 添加默认路由 (接口 {interface})。请检查 root 权限。", flush=True)
-        log_to_json("ERROR", "Routing", f"无法向路由表 {table} 添加默认路由")
+        print(f"[閻犱警鍨抽弫閬嶆煀瀹ュ洨鏋傚鎯扮簿鐟欘泝 闁哄啰濮电涵鍫曞触閹达絿鐔呴柣銏ｇ簿閵?{table} 婵烇綀顕ф慨鐐搭渶濡鍚囬悹渚灣閺?(闁规亽鍎辫ぐ?{interface})闁靛棗鍊介顒€螞閳ь剟寮?root 闁哄鍟村娲Υ?, flush=True)
+        log_to_json("ERROR", "Routing", f"闁哄啰濮电涵鍫曞触閹达絿鐔呴柣銏ｇ簿閵?{table} 婵烇綀顕ф慨鐐搭渶濡鍚囬悹渚灣閺?)
 
 def cleanup_policy_routing(table: int = 100, channel_idx: int = 0) -> None:
     try:
@@ -1215,13 +1215,13 @@ def get_free_test_index() -> int:
             if idx not in active_test_indexes:
                 active_test_indexes.add(idx)
                 return idx
-        raise RuntimeError("没有可用的 OpenVPN 测试网卡编号，请稍后重试")
+        raise RuntimeError("婵炲备鍓濆﹢渚€宕ｉ婊勬殢闁?OpenVPN 婵炴潙顑堥惁顖滅磾閹存繂骞㈢紓鍌涚墪瑜板潡鏁嶅畝鍐惧殲缂佸绉撮幃妤呮煂瀹ュ牏妲?)
 
 def release_test_index(idx: int) -> None:
     with test_indexes_lock:
         active_test_indexes.discard(idx)
 
-# Channel TUN allocation — dynamically picks free TUN from pool (200+)
+# Channel TUN allocation 闁?dynamically picks free TUN from pool (200+)
 # Routing table uses the same number as the TUN device for 1:1 mapping.
 def alloc_channel_tun(channel_idx: int) -> int:
     """Allocate next available channel TUN from the dedicated pool (200+)."""
@@ -1394,13 +1394,13 @@ def test_multiple_nodes(node_ids: list[str]) -> list[dict[str, Any]]:
                     "latency_ms": 0
                 }
                 
-    # 批量查询并丰富可用节点的地理及 ISP 信息，防止并发时被定位 API 接口限流
+    # 闁归潧缍婇崳娲蓟閵夘煈鍤勬鐐存构鐠у鈧潧鑻ぐ鏌ユ偨閵娿劌螡闁绘劕婀卞▓鎴﹀捶閹殿喗鍊為柛?ISP 濞ｅ洠鍓濇导鍛存晬瀹€鍕╂慨婵勫灩閼荤喖宕ｉ幋鐐搭槯閻炴凹鍋勯悾鐐媴?API 闁规亽鍎辫ぐ娑㈡⒔閹邦厾銈?
     successful_nodes = [res for res in updated_nodes_map.values() if res.get("probe_status") == "available"]
     if successful_nodes:
         try:
             vpn_utils.enrich_ip_info(successful_nodes)
         except Exception as ee:
-            print(f"[test_multiple_nodes] 批量富化 IP 失败: {ee}", flush=True)
+            print(f"[test_multiple_nodes] 闁归潧缍婇崳铏光偓闈涜嫰鐎?IP 濠㈡儼绮剧憴? {ee}", flush=True)
 
     with lock:
         current_nodes = read_nodes()
@@ -1415,28 +1415,28 @@ def test_multiple_nodes(node_ids: list[str]) -> list[dict[str, Any]]:
 
 def auto_switch_node(attempt: int = 0) -> None:
     if attempt >= 3:
-        print("[自动切换] 连续切换失败已达 3 次，停止切换以防止主线程死锁，将在后台重新加载节点...", flush=True)
+        print("[闁煎浜滄慨鈺呭礆閸ャ劌搴奭 閺夆晝鍋熼悽濠氬礆閸ャ劌搴婂鎯扮簿鐟欙箑顔忛懠鑸靛涧 3 婵炲棌妲勭槐婵嬪磻濠婂嫷鍓鹃柛鎺戞处瀹曞弶绂掗妷鈺傂╂慨婵愭線鐎靛瞼鐥捄銊㈡煠婵繂顭烽弨锝夋晬鐏炵晫娈洪柛锔哄妼閹宕ｆ导鏉戞闁哄倹婢樻慨鐐存姜閸婄喎螡闁?..", flush=True)
         return
     
     # Skip auto-switch if any channel is actively connected (multi-channel mode)
     with lock:
         for chi in range(MAX_CHANNELS):
             if ch_processes[chi] is not None and ch_processes[chi].poll() is None:
-                print(f"[自动切换] 通道 {chi} 正在使用中，跳过旧版单连接自动切换。", flush=True)
+                print(f"[闁煎浜滄慨鈺呭礆閸ャ劌搴奭 闂侇偅宀告禍?{chi} 婵繐绲藉﹢顏呮媴鐠恒劍鏆忓☉鎿冨弿缁辨繄鎹勭€圭姷绠栭柡鍐勫懎顣奸柛妤佹礉缁绘盯骞掗妷銊ユ闁告柣鍔岄崹蹇涘箲椤兘鍋?, flush=True)
                 return
     
         
     ui_cfg = load_ui_config()
     connection_enabled = ui_cfg.get("connection_enabled", True)
     if not connection_enabled:
-        print("[自动切换] 连接已禁用，不进行自动切换。", flush=True)
+        print("[闁煎浜滄慨鈺呭礆閸ャ劌搴奭 閺夆晝鍋炵敮鏉戭啅閼碱剦娲ｉ柣銏╃厜缁辨繃绋夊鍫㈢閻炴稑鐭侀崵婊堝礉閵娿儱鐎奸柟璇℃娇閳?, flush=True)
         return
 
     routing_mode = ui_cfg.get("routing_mode", "auto")
     target_country = ui_cfg.get("force_country", "")
 
     if routing_mode == "fixed_ip":
-        print("[自动切换] 当前处于固定 IP 模式，不进行自动连接或切换。", flush=True)
+        print("[闁煎浜滄慨鈺呭礆閸ャ劌搴奭 鐟滅増鎸告晶鐘冲緞閸曨亞鑹鹃柛銉ユ惈閻?IP 婵☆垪鈧磭纭€闁挎稑濂旂粭澶嬫交濞戞粠鏀介柤濂変簻婵晜娼婚悙鏉戝闁瑰瓨鐗曢崹蹇涘箲椤兘鍋?, flush=True)
         return
 
     # Find the next best available node
@@ -1475,21 +1475,21 @@ def auto_switch_node(attempt: int = 0) -> None:
         
     if candidates:
         next_node = candidates[0]
-        msg = f"当前连接已失效或代理连通性检测失败，正在自动切换至最佳备用节点: {next_node['id']}"
-        print(f"[自动切换] {msg}", flush=True)
+        msg = f"鐟滅増鎸告晶鐘虫交閻愭潙澶嶇€瑰憡褰冮妵鎴﹀极閸喎鐏楀ù鐙呯悼閹﹥娼婚悙琛″亾濮橆厸鍋撹椤ュ懎霉鐎ｎ亗浜奸悹鎰╁劵缁辨繂顫㈤敐鍛含闁煎浜滄慨鈺呭礆閸ャ劌搴婇柤鐤珪濞撹埖鎷呴崘宸У闁活潿鍔忔俊顓㈡倷? {next_node['id']}"
+        print(f"[闁煎浜滄慨鈺呭礆閸ャ劌搴奭 {msg}", flush=True)
         log_to_json("INFO", "VPN", msg)
         try:
             connect_node(next_node["id"])
         except Exception as e:
-            err_msg = f"切换到备用节点 {next_node['id']} 失败: {e}，将尝试下一个..."
-            print(f"[自动切换] {err_msg}", flush=True)
+            err_msg = f"闁告帒娲﹀畷鏌ュ礆閺夋妲甸柣顫姀婵☆參鎮?{next_node['id']} 濠㈡儼绮剧憴? {e}闁挎稑鑻惃銏焊濠靛﹦妲稿☉鎾愁儎缁斿瓨绋?.."
+            print(f"[闁煎浜滄慨鈺呭礆閸ャ劌搴奭 {err_msg}", flush=True)
             log_to_json("WARNING", "VPN", err_msg)
             auto_switch_node(attempt + 1)
     else:
-        msg = "没有可用的备选节点，将自动断开并清理当前连接状态，同时在后台异步获取新节点..."
+        msg = "婵炲备鍓濆﹢渚€宕ｉ婊勬殢闁汇劌瀚ˇ顒勬焻婢跺骸螡闁绘劗娅㈢槐婵堜焊閸℃艾娈伴柛鏂诲妽閺屽洤顕ｉ埀顒勭嵁閼哥數顏搁柣鐐叉缂嶅宕滃鍫㈢闁规亽鍎虫慨鎼佸箑娓氬﹦绀夐柛姘湰濡炲倿宕烽妸銉﹀€甸柛娆愭緲缁辨挸顫㈤妷銊ョ闁告瑦鐗楅弻濠囨嚍閸屾粌浠?.."
         if routing_mode == "fixed_region" and target_country:
-            msg = f"没有可用的【{target_country}】备选节点，已断开连接，将在后台持续尝试获取新节点..."
-        print(f"[自动切换] {msg}", flush=True)
+            msg = f"婵炲备鍓濆﹢渚€宕ｉ婊勬殢闁汇劌瀚ㄩ埀顒佷紥target_country}闁靛棙鍨甸ˇ顒勬焻婢跺骸螡闁绘劗娅㈢槐婵嗩啅閸欏鐒界€殿喒鍋撻弶鈺冨仦鐢挳鏁嶇仦鐣屾闁革负鍔岄幃妤呭矗閻楀牆鐦紓渚囧幖閻ㄥ墽鎷犻弴鈥崇闁告瑦鐗楅弻濠囨嚍閸屾粌浠?.."
+        print(f"[闁煎浜滄慨鈺呭礆閸ャ劌搴奭 {msg}", flush=True)
         log_to_json("WARNING", "VPN", msg)
         stop_active_openvpn()
         with lock:
@@ -1504,7 +1504,7 @@ def auto_switch_node(attempt: int = 0) -> None:
                 maintain_valid_nodes(force=False)
                 auto_switch_node()
             except Exception as e:
-                print(f"[自动切换后台补齐] 获取并测试节点失败: {e}", flush=True)
+                print(f"[闁煎浜滄慨鈺呭礆閸ャ劌搴婇柛姘瑜板鎮伴妷鈺冪Х] 闁兼儳鍢茶ぐ鍥嵁閼哥數銈撮悹鍥ㄦ礉婵☆參鎮欓悷鑸杭閻? {e}", flush=True)
         
         threading.Thread(target=bg_fetch_and_switch, daemon=True).start()
 
@@ -1579,13 +1579,13 @@ def connect_node(node_id: str) -> str:
     stopped_existing = False
     with lock:
         if is_connecting:
-            print("[连接] 正在建立其他连接中，跳过此请求", flush=True)
-            raise RuntimeError("当前已有连接或节点检测任务正在运行，请稍后再试")
+            print("[閺夆晝鍋炵敮纰?婵繐绲藉﹢顏勵嚈閾忓湱褰岄柛蹇旀构缁剚娼婚悙鏉戝濞戞搩鍙忕槐婵堟崉鐎圭姷绠栨慨婵勫€涢顒€效?, flush=True)
+            raise RuntimeError("鐟滅増鎸告晶鐘差啅閸欏绠掗弶鈺冨仦鐢挳骞嬮弽顒€螡闁绘劘顫夐ˉ鍛圭€ｂ晜宕查柛鏂哄墲椤掓粓宕烽妸銊х閻炴稑鐭夌槐婵堟嫚妞嬪簶妫﹂柛姘閸熲偓閻?)
         is_connecting = True
-        set_state(is_connecting=True, active_node_latency="正在连接", last_check_message=f"正在初始化连接配置: {node_id}")
+        set_state(is_connecting=True, active_node_latency="婵繐绲藉﹢顏呮交閻愭潙澶?, last_check_message=f"婵繐绲藉﹢顏堝礆濠靛棭娼楅柛鏍ㄧ墳缁绘盯骞掗妷鈺佸赋缂? {node_id}")
         
     try:
-        log_to_json("INFO", "VPN", f"开始连接节点: {node_id}")
+        log_to_json("INFO", "VPN", f"鐎殿喒鍋撳┑顔碱儓缁绘盯骞掗妷銊ノ濋柣? {node_id}")
 
         nodes = read_nodes()
         node = next((item for item in nodes if item.get("id") == node_id), None)
@@ -1601,11 +1601,11 @@ def connect_node(node_id: str) -> str:
             DATA_DIR.mkdir(exist_ok=True, parents=True)
             auth_file.write_text(json.dumps(ui_cfg, ensure_ascii=False, indent=2), encoding="utf-8")
         
-        set_state(active_node_latency="清理连接", last_check_message="正在关闭与清理旧的 VPN 连接及网卡...")
+        set_state(active_node_latency="婵炴挸鎳愰幃濠冩交閻愭潙澶?, last_check_message="婵繐绲藉﹢顏堝礂閹惰姤锛斿☉鎾冲缁斿鎮堕崱妯伙紜闁?VPN 閺夆晝鍋炵敮鎾矗婵犲嫮绉归柛?..")
         stop_active_openvpn()
         stopped_existing = True
 
-        set_state(active_node_latency="写入配置", last_check_message="正在写入 OpenVPN 节点配置文件...")
+        set_state(active_node_latency="闁告劖鐟ラ崣鍡涙煀瀹ュ洨鏋?, last_check_message="婵繐绲藉﹢顏堝礃濞嗗繐寮?OpenVPN 闁煎搫鍊婚崑锝夋煀瀹ュ洨鏋傞柡鍌氭矗濞?..")
         config_path = Path(node["config_file"])
         try:
             CONFIG_DIR.mkdir(exist_ok=True, parents=True)
@@ -1613,7 +1613,7 @@ def connect_node(node_id: str) -> str:
         except Exception as e:
             raise RuntimeError(f"Failed to write configuration: {e}")
 
-        set_state(active_node_latency="启动核心", last_check_message="正在启动 OpenVPN Core 核心服务并建立连接...")
+        set_state(active_node_latency="闁告凹鍨版慨鈺呭冀缁嬭法濡?, last_check_message="婵繐绲藉﹢顏堝触椤栨艾袟 OpenVPN Core 闁哄秶顭堢缓楣冨嫉瀹ュ懎顫ゆ鐐舵硾缂傛挾绮╃€ｎ厾绠鹃柟?..")
         ok, message, process = run_openvpn_until_ready(str(node["config_file"]), keep_alive=True, route_nopull=True)
         if not ok or process is None:
             try:
@@ -1626,9 +1626,9 @@ def connect_node(node_id: str) -> str:
             for item in nodes:
                 item["active"] = False
             write_json(NODES_FILE, nodes)
-            log_to_json("ERROR", "VPN", f"连接节点 {node_id} 失败: {message}")
-            print(f"[连接核心失败] 无法与 VPN 节点 {node_id} 建立隧道连接！详情: {message}", flush=True)
-            set_state(active_openvpn_node_id="", is_connecting=False, active_node_latency="无活动连接", last_check_message=f"连接失败: {message}")
+            log_to_json("ERROR", "VPN", f"閺夆晝鍋炵敮鎾嚍閸屾粌浠?{node_id} 濠㈡儼绮剧憴? {message}")
+            print(f"[閺夆晝鍋炵敮鎾冀缁嬭法濡囧鎯扮簿鐟欘泝 闁哄啰濮电涵鑸电▔?VPN 闁煎搫鍊婚崑?{node_id} 鐎点倛娅ｉ悵娑㈡⒕瑜旀禍鐐交閻愭潙澶嶉柨娑楁祰椤曟盯骞? {message}", flush=True)
+            set_state(active_openvpn_node_id="", is_connecting=False, active_node_latency="闁哄啰濮靛鍧楀礉閵娿劎绠鹃柟?, last_check_message=f"閺夆晝鍋炵敮瀛樺緞鏉堫偉袝: {message}")
             with lock:
                 active_openvpn_node_id = ""
             raise RuntimeError(message)
@@ -1637,14 +1637,14 @@ def connect_node(node_id: str) -> str:
             active_openvpn_process = process
             active_openvpn_node_id = node_id
         
-        set_state(active_node_latency="配置路由", last_check_message="正在配置策略路由规则与流量转发...")
+        set_state(active_node_latency="闂佹澘绉堕悿鍡欐崉椤栨粍鏆?, last_check_message="婵繐绲藉﹢顏堟煀瀹ュ洨鏋傜紒娑欑墱閺嗘劗鎹勯婊勬殸閻熸瑥瀚崹顖涚▔鎼淬垻銈﹂梺鎻掔箺濞村棝宕?..")
         setup_policy_routing("tun0")
         
         global last_active_ping_time, last_active_latency
         last_active_ping_time = time.time()
         last_active_latency = 0
         
-        set_state(active_node_latency="测试延迟", last_check_message="正在直连测试代理出口延迟与可用性...")
+        set_state(active_node_latency="婵炴潙顑堥惁顖氼嚈閹壆绠?, last_check_message="婵繐绲藉﹢顏堟儎绾惧绠炬繛鏉戭儓閻︻垱绂掗敐鍥ㄥ€為柛鎴濇惈瑜版稑顕欓幆鎵濞戞挸楠歌ぐ鏌ユ偨閵婏腹鍋?..")
         try:
             ip = node.get("ip") or node.get("remote_host")
             port = parse_int(node.get("remote_port"))
@@ -1662,7 +1662,7 @@ def connect_node(node_id: str) -> str:
                 item["probe_message"] = f"Active node. HTTP proxy: http://{_ph}:{LOCAL_PROXY_PORT}"
         write_json(NODES_FILE, nodes)
         
-        set_state(last_check_message="正在测试本地代理出站联通性与出口 IP...")
+        set_state(last_check_message="婵繐绲藉﹢顏劽圭€ｎ厾妲搁柡鍫墮濠€瀛樼閿濆洦鍊為柛鎴ｆ閻濐垶鎳曢弮鍫氬亾濮橆厸鍋撹缁楀矂宕欓崫鍕稉 IP...")
         res = check_proxy_health()
         if res["ok"]:
             set_state(
@@ -1676,18 +1676,18 @@ def connect_node(node_id: str) -> str:
                 proxy_ok=False,
                 proxy_ip="-",
                 proxy_latency_ms=0,
-                proxy_error=res.get("error", "未知错误")
+                proxy_error=res.get("error", "闁哄牜浜為悡锟犳煥濞嗘帩鍤?)
             )
             
-        latency_str = f"{last_active_latency} ms" if last_active_latency > 0 else "检测超时"
+        latency_str = f"{last_active_latency} ms" if last_active_latency > 0 else "婵☆偀鍋撴繛鏉戭儓缁夋挳寮?
         set_state(active_openvpn_node_id=node_id, is_connecting=False, last_check_message=f"Connected {node_id}", active_node_latency=latency_str)
-        log_to_json("INFO", "VPN", f"节点 {node_id} 连接成功，出口网卡 tun0 已启用")
+        log_to_json("INFO", "VPN", f"闁煎搫鍊婚崑?{node_id} 閺夆晝鍋炵敮鎾箣閹邦剙顫犻柨娑樿嫰閸ゎ參宕ｉ敐鍥╃Ч闁?tun0 鐎瑰憡褰冮幆搴ㄦ偨?)
         return f"Connected {node_id}"
     except Exception as exc:
         if stopped_existing or (active_openvpn_node_id == node_id and not active_openvpn_running()):
-            clear_active_connection_state(f"连接失败: {exc}")
+            clear_active_connection_state(f"閺夆晝鍋炵敮瀛樺緞鏉堫偉袝: {exc}")
         else:
-            set_state(is_connecting=False, last_check_message=f"连接失败: {exc}")
+            set_state(is_connecting=False, last_check_message=f"閺夆晝鍋炵敮瀛樺緞鏉堫偉袝: {exc}")
         raise
     finally:
         with lock:
@@ -1697,7 +1697,7 @@ def maintain_valid_nodes(force: bool = False) -> str:
     global active_openvpn_process, active_openvpn_node_id, is_connecting
     ensure_dirs()
     if not maintenance_lock.acquire(blocking=False):
-        msg = "节点维护任务正在运行，请稍后再试"
+        msg = "闁煎搫鍊婚崑锝囩磼鐎涙ê袘濞寸姾顕ф慨鐔奉潰閿濆懏韬弶鈺傚姌椤㈡垿鏁嶅畝鍐惧殲缂佸绉撮幃妤呭礃瀹ュ牏妲?
         set_state(last_check_message=msg)
         return msg
     is_connecting = True
@@ -1715,12 +1715,12 @@ def maintain_valid_nodes(force: bool = False) -> str:
                     if target_id:
                         nodes = read_nodes()
                         if any(n.get("id") == target_id for n in nodes):
-                            print(f"[维护线程] 检测到固定 IP 模式下 OpenVPN 未运行，正在重新拉起同一节点: {target_id}", flush=True)
+                            print(f"[缂備礁鐡ㄦ慨銏㈢棯鐠恒劉鏌 婵☆偀鍋撴繛鏉戭儏閸╁矂宕堕崫鍕毎 IP 婵☆垪鈧磭纭€濞?OpenVPN 闁哄牜浜ｇ换宥囨偘瀹€瀣婵繐绲藉﹢顏堟煂瀹ュ棙鐓€闁瑰嘲顦抽幑锝夊触鐏炶偐顏遍柤鍝勫€婚崑? {target_id}", flush=True)
                             is_connecting = False
                             try:
                                 connect_node(target_id)
                             except Exception as e:
-                                print(f"[维护线程] 重新拉起固定节点 {target_id} 失败: {e}", flush=True)
+                                print(f"[缂備礁鐡ㄦ慨銏㈢棯鐠恒劉鏌 闂佹彃绉甸弻濠囧箯婢跺孩宕抽柛銉ユ惈閻ｉ箖鎳為崒婊冧化 {target_id} 濠㈡儼绮剧憴? {e}", flush=True)
                             is_connecting = True
                 else:
                     has_active_id = False
@@ -1735,25 +1735,25 @@ def maintain_valid_nodes(force: bool = False) -> str:
                                 break
                     if has_active_id:
                         stop_active_openvpn()
-                        print("[维护线程] 检测到当前 OpenVPN 进程已意外退出，准备自动切换节点", flush=True)
+                        print("[缂備礁鐡ㄦ慨銏㈢棯鐠恒劉鏌 婵☆偀鍋撴繛鏉戭儏閸╁矁銇愰幘鍐差枀 OpenVPN 閺夆晜绋撻埢鐓庮啅閸欏澹堝鑸电墵閳ь兘鍋撻柛鎴犲皑缁辨繈宕欓崱妤婃У闁煎浜滄慨鈺呭礆閸ャ劌搴婇柤鍝勫€婚崑?, flush=True)
                         is_connecting = False
                         auto_switch_node()
                         is_connecting = True
 
         try:
-            set_state(is_connecting=True, last_check_message="正在拉取最新的免费 VPN 节点列表...")
+            set_state(is_connecting=True, last_check_message="婵繐绲藉﹢顏堝箯婢跺﹤绲块柡鍫氬亾闁哄倹澹嗗▓鎴﹀礂瀹ュ牆鐎?VPN 闁煎搫鍊婚崑锝夊礆濡ゅ嫨鈧?..")
             candidates = fetch_candidates()
         except Exception as exc:
             vpn_utils.check_and_fix_dns()
             diag_msg = str(exc)
-            if not any(token in diag_msg for token in ["[ERR_", "错误代码"]):
+            if not any(token in diag_msg for token in ["[ERR_", "闂佹寧鐟ㄩ銈嗙閿濆洨鍨?]):
                 err_code, raw_diag = vpn_utils.diagnose_api_failure(API_URL)
-                diag_msg = f"[错误代码 {err_code}] 获取节点失败: {exc} | 诊断结果: {raw_diag}"
+                diag_msg = f"[闂佹寧鐟ㄩ銈嗙閿濆洨鍨?{err_code}] 闁兼儳鍢茶ぐ鍥嚍閸屾粌浠鎯扮簿鐟? {exc} | 閻犲洤锕ラ弻鍥╃磼閹惧浜? {raw_diag}"
             set_state(last_fetch_at=time.time(), last_fetch_status="error", last_fetch_message=diag_msg)
             candidates = []
 
         if not candidates:
-            return "没有拉取到新节点"
+            return "婵炲备鍓濆﹢渚€骞忔径濠傜悼闁告帞澧楅弻濠囨嚍閸屾粌浠?
 
         with lock:
             active_node = None
@@ -1792,11 +1792,11 @@ def maintain_valid_nodes(force: bool = False) -> str:
             to_test = [n for n in current_nodes if not n.get("active")]
             to_test_ids = [n["id"] for n in to_test]
             
-        msg = f"开始对列表中所有候选节点进行周期连通性与延迟测试，待检测节点共 {len(to_test_ids)} 个"
-        print(f"[周期检测] {msg}", flush=True)
+        msg = f"鐎殿喒鍋撳┑顔碱儏椤曨噣宕氬Δ鍕┾偓鍐╃▔椤撶喎顣查柡鍫濐槸閳ь剚鐟╅埀顒€顦虫俊顓㈡倷绾懐绠婚悶娑樿嫰閹冲棝寮甸悢鑽ょ闂侇偅纰嶉埀顑倻鐟㈢€点倖鍎肩换婊兠圭€ｎ厾妲搁柨娑樿嫰缁剁喎螞閳ь剙霉鐎ｎ厼螡闁绘劗鎳撻崣?{len(to_test_ids)} 濞?
+        print(f"[闁告稏鍔嶅﹢鈥澄涢埀顒€霉婵?{msg}", flush=True)
         log_to_json("INFO", "Main", msg)
         
-        set_state(is_connecting=True, last_check_message="正在并发检测所有节点可用性...")
+        set_state(is_connecting=True, last_check_message="婵繐绲藉﹢顏堢嵁鐠哄搫绲烘俊顐熷亾婵炴潙顑嗘晶宥夊嫉婢跺骸螡闁绘劗鎳撹ぐ鏌ユ偨閵婏腹鍋?..")
         test_multiple_nodes(to_test_ids)
         is_connecting = False
         
@@ -1806,19 +1806,19 @@ def maintain_valid_nodes(force: bool = False) -> str:
             # Identify available, unavailable, and active nodes
             available_nodes = [n["id"] for n in merged if n.get("probe_status") == "available"]
             unavailable_nodes = [n["id"] for n in merged if n.get("probe_status") == "unavailable"]
-            active_node = next((n["id"] for n in merged if n.get("active")), "无")
+            active_node = next((n["id"] for n in merged if n.get("active")), "闁?)
             
             status_report = (
-                f"周期节点检测完成。实时同步状态: 获取到候选节点共 {len(merged)} 个。 "
-                f"其中【可用节点】{len(available_nodes)} 个: {available_nodes[:15]}...; "
-                f"【不可用节点】{len(unavailable_nodes)} 个; "
-                f"当前【正在正常运行的活动连接节点】为: {active_node}。"
+                f"闁告稏鍔嶅﹢锟犳嚍閸屾粌浠俊顐熷亾婵炴潙顑呴悾顒勫箣閹扳斁鍋撻崒姘辨澖闁哄啳娉涢幃鎾愁潰閵壯冃﹂柟? 闁兼儳鍢茶ぐ鍥礆閺夊簱鍋撳▎鎾亾婢跺骸螡闁绘劗鎳撻崣?{len(merged)} 濞戞搩浜楅埀?"
+                f"闁稿繑婀归懙鎴﹀Υ閹邦剙璁查柣顫姀婵☆參鎮欓獮搴撳亾閹叉唨en(available_nodes)} 濞? {available_nodes[:15]}...; "
+                f"闁靛棙鍔掔粭澶愬矗椤栨粍鏆忛柤鍝勫€婚崑锝夊Υ閹叉唨en(unavailable_nodes)} 濞? "
+                f"鐟滅増鎸告晶鐘诲Υ閹邦収鍔€闁革负鍔嶉婊呮暜濮濆瞼绠ラ悶娑樼灱濞堟垵煤鐠囨彃袟閺夆晝鍋炵敮鎾嚍閸屾粌浠柕鍡樺灣鐠? {active_node}闁?
             )
-            print(f"[周期检测] {status_report}", flush=True)
+            print(f"[闁告稏鍔嶅﹢鈥澄涢埀顒€霉婵?{status_report}", flush=True)
             log_to_json("INFO", "Main", status_report)
             
-            if active_node != "无" and not active_openvpn_running():
-                warn_msg = f"[诊断警告] 活动节点 {active_node} 被标记为活动状态，但 OpenVPN 进程实际并未正常运行！"
+            if active_node != "闁? and not active_openvpn_running():
+                warn_msg = f"[閻犲洤锕ラ弻鍥╂媰閿曗偓閹差摚 婵炶尪顕ф慨鈺呮嚍閸屾粌浠?{active_node} 閻炴凹鍋呴悥锝囨媼妫颁浇绀嬫繛鑼额嚙婵晠鎮╅懜纰樺亾娓氬﹦绀夊ù?OpenVPN 閺夆晜绋撻埢鑲┾偓鍦仱濡绢垶鐛懜鍨紦婵繐绲介悥鑸垫交閹邦垼鏀介柨?
                 print(warn_msg, flush=True)
                 log_to_json("WARNING", "Main", warn_msg)
             
@@ -1879,15 +1879,15 @@ def collector_loop() -> None:
         last_collector_heartbeat = time.time()
         success = False
         try:
-            print("[守护线程] 开始执行节点拉取与可用性检测周期任务...", flush=True)
-            log_to_json("INFO", "Main", "开始执行节点拉取与可用性检测周期任务...")
+            print("[閻庣懓鐗婃慨銏㈢棯鐠恒劉鏌 鐎殿喒鍋撳┑顔碱儐婢х晫鎮板畝鍐ㄎ濋柣鎰潐婵椽宕ｉ弽锔剧憿闁告瑯鍨抽弫銈夊箑瑜庨ˉ鍛圭€ｎ亝鍣柡鍫㈠枍閹广垽宕?..", flush=True)
+            log_to_json("INFO", "Main", "鐎殿喒鍋撳┑顔碱儐婢х晫鎮板畝鍐ㄎ濋柣鎰潐婵椽宕ｉ弽锔剧憿闁告瑯鍨抽弫銈夊箑瑜庨ˉ鍛圭€ｎ亝鍣柡鍫㈠枍閹广垽宕?..")
             res = maintain_valid_nodes(force=False)
-            if "没有拉取到新节点" not in res:
+            if "婵炲备鍓濆﹢渚€骞忔径濠傜悼闁告帞澧楅弻濠囨嚍閸屾粌浠? not in res:
                 success = True
-            log_to_json("INFO", "Main", f"周期同步与检测任务完成，结果: {res}")
+            log_to_json("INFO", "Main", f"闁告稏鍔嶅﹢锟犲触鐏炵虎鍔勫☉鎾冲椤ュ懎霉鐎ｂ晜宕查柛鏂衡偓宕囨殮闁瑰瓨鍔х槐婵堢磼閹惧浜? {res}")
         except Exception as exc:
-            err_msg = f"周期节点同步任务执行异常: {exc}"
-            print(f"[错误] {err_msg}", flush=True)
+            err_msg = f"闁告稏鍔嶅﹢锟犳嚍閸屾粌浠柛姘湰椤掔偞绂掔拠鎻掝潳闁圭瑳鍡╂斀鐎殿喖鍊搁悥? {exc}"
+            print(f"[闂佹寧鐟ㄩ顦?{err_msg}", flush=True)
             log_to_json("ERROR", "Main", err_msg)
             set_state(last_check_at=time.time(), last_check_message=f"check error: {exc}")
             
@@ -1903,7 +1903,7 @@ LOGIN_HTML = r"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AimiliVPN - 安全登录</title>
+  <title>AimiliVPN - 閻庣懓顦崣蹇涙儌鐠囪尙绉?/title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -2091,25 +2091,25 @@ LOGIN_HTML = r"""<!DOCTYPE html>
         </svg>
       </div>
       <h2 class="login-title">AimiliVPN</h2>
-      <p class="login-subtitle">请输入您的管理账号和安全密码以继续</p>
+      <p class="login-subtitle">閻犲洨鏌夌欢顓㈠礂閵夛箑浜堕柣銊ュ椤撴悂鎮堕崱姘槱闁告瑥鍢查幏鎵偓鐟邦槸閸欏繒鈧潧妫涢悥婊勭閵壯勫煕缂?/p>
       
       <form id="login_form" onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label class="form-label" for="username">管理账号</label>
+          <label class="form-label" for="username">缂佺媴绱曢幃濠勬嫻閿曗偓瑜?/label>
           <div class="input-wrapper">
-            <input type="text" id="username" name="username" class="input-field" placeholder="请输入管理账号" required autocomplete="username">
+            <input type="text" id="username" name="username" class="input-field" placeholder="閻犲洨鏌夌欢顓㈠礂閵壯屽悁闁荤偛妫滄径鍕矗? required autocomplete="username">
           </div>
         </div>
         <div class="form-group" style="margin-top: 16px;">
-          <label class="form-label" for="password">安全密码</label>
+          <label class="form-label" for="password">閻庣懓顦崣蹇曗偓闈涙閻?/label>
           <div class="input-wrapper">
-            <input type="password" id="password" name="password" class="input-field" placeholder="请输入安全密码" required autocomplete="current-password">
+            <input type="password" id="password" name="password" class="input-field" placeholder="閻犲洨鏌夌欢顓㈠礂閵夈儳鏆旈柛蹇嬪妼閻︽垿鎯? required autocomplete="current-password">
           </div>
           <div id="error_text" class="error-message"></div>
         </div>
         
         <button type="submit" id="submit_btn" class="login-btn">
-          <span>登录</span>
+          <span>闁谎嗩嚙缂?/span>
         </button>
       </form>
     </div>
@@ -2125,7 +2125,7 @@ LOGIN_HTML = r"""<!DOCTYPE html>
       
       errorText.style.display = "none";
       submitBtn.disabled = true;
-      submitBtn.querySelector("span").textContent = "正在验证...";
+      submitBtn.querySelector("span").textContent = "婵繐绲藉﹢顏咁殽瀹€鍐...";
       
       try {
         const response = await fetch("./api/login", {
@@ -2138,16 +2138,16 @@ LOGIN_HTML = r"""<!DOCTYPE html>
         if (response.ok && data.ok) {
           window.location.reload();
         } else {
-          errorText.textContent = data.error || "账号或密码不正确，请重新输入";
+          errorText.textContent = data.error || "閻犳劧绠戣ぐ鍧楀箣閺嵮呮闁活喕妞掔粭澶婎潰閿濆洠鈧﹢鏁嶅畝鍐惧殲闂佹彃绉甸弻濠冩綇閹惧啿寮?;
           errorText.style.display = "block";
           submitBtn.disabled = false;
-          submitBtn.querySelector("span").textContent = "登录";
+          submitBtn.querySelector("span").textContent = "闁谎嗩嚙缂?;
         }
       } catch (err) {
-        errorText.textContent = "连接服务器失败，请稍后重试";
+        errorText.textContent = "閺夆晝鍋炵敮鎾嫉瀹ュ懎顫ら柛锝冨妼閵囨垹鎷归妷顖滅閻犲洭顥撻埣銏ゅ触鎼淬劌娅㈤悹?;
         errorText.style.display = "block";
         submitBtn.disabled = false;
-        submitBtn.querySelector("span").textContent = "登录";
+        submitBtn.querySelector("span").textContent = "闁谎嗩嚙缂?;
       }
     }
   </script>
@@ -2161,7 +2161,7 @@ INDEX_HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AimiliVPN 节点管理系统</title>
+<title>AimiliVPN 闁煎搫鍊婚崑锝囩不閿涘嫭鍊炵紒顖濆吹缁?/title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
@@ -2353,8 +2353,8 @@ button:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;box-shad
 
 /* ===== Dropdown ===== */
 .dropdown{position:relative;display:inline-block}
-.dropdown-content{display:none;position:absolute;right:0;top:100%;margin-top:6px;min-width:180px;background:rgba(16,21,40,0.95);border:1px solid var(--border-default);border-radius:var(--radius-sm);overflow:hidden;z-index:200;box-shadow:var(--shadow-elevated)}
-.dropdown-content a{display:block;padding:10px 16px;color:var(--text-secondary);font-size:12px;text-decoration:none;transition:all 0.15s ease;cursor:pointer}
+.dropdown-content{display:flex;position:static;flex-direction:row;gap:4px;background:transparent;border:none;overflow:visible;z-index:auto;box-shadow:none;min-width:auto}
+.dropdown-content a{display:inline-flex;padding:6px 12px;color:var(--text-secondary);font-size:12px;text-decoration:none;transition:all 0.15s ease;cursor:pointer;border-radius:6px;white-space:nowrap}
 .dropdown-content a:hover{background:rgba(255,255,255,0.04);color:var(--text-primary)}
 
 /* ===== Gateway styles ===== */
@@ -2408,27 +2408,22 @@ header{padding:10px 16px;flex-wrap:wrap}.channel-section{padding:16px 16px 0}mai
 </div>
 <div class="brand-text">
 <span class="brand-title">VPN Gate</span>
-<span class="brand-subtitle">AIMILI · 智能路由</span>
+<span class="brand-subtitle">AIMILI 鐠?闁哄懘缂氶崗妯兼崉椤栨粍鏆?/span>
 </div>
-<span class="status-badge" id="systemStatus"><span class="dot"></span>系统运行中</span>
+<span class="status-badge" id="systemStatus"><span class="dot"></span>缂侇垵宕电划鐑樻交閹邦垼鏀藉☉?/span>
 </div>
 <div class="header-actions">
 <a href="https://t.me/AimiliVPN" target="_blank" class="btn-telegram">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-Telegram 群组
+Telegram 缂傚洢鍊楃划?
 </a>
-<div class="dropdown">
-<button onclick="toggleDropdown()">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-</button>
 <div class="dropdown-content" id="adminDropdown">
-<a onclick="openCredentialsModal()">账号凭据</a>
-<a onclick="openNetworkModal()">网络设置</a>
-<a onclick="openGatewayModal()">服务状态</a>
-<a onclick="openLogsModal()">运行日志</a>
-<a onclick="openVpsModal()">推荐 VPS</a>
-<a onclick="logoutAdmin()" style="color:#fb7185">退出登录</a>
-</div>
+<a onclick="openCredentialsModal()">閻犳劧绠戣ぐ鍧楀礄椤撶喎绁?/a>
+<a onclick="openNetworkModal()">缂傚啯鍨圭划鍓佹媼閸撗呮瀭</a>
+<a onclick="openGatewayModal()">闁哄牆绉存慨鐔兼偐閼哥鍋?/a>
+<a onclick="openLogsModal()">閺夆晜鍔橀、鎴﹀籍閵夈儳绠?/a>
+<a onclick="openVpsModal()">闁规亽鍔忓畷?VPS</a>
+<a onclick="logoutAdmin()" style="color:#fb7185">闂侇偀鍋撻柛鎴ｆ濞呫儴銇?/a>
 </div>
 </div>
 </header>
@@ -2443,7 +2438,7 @@ Telegram 群组
 <div class="channel-section-header">
 <span class="channel-section-title">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-多通道状态
+濠㈣埖宀搁埀顒佸哺娴滈箖鎮╅懜纰樺亾?
 </span>
 </div>
 <div class="channel-grid" id="channelGrid"></div>
@@ -2452,17 +2447,17 @@ Telegram 群组
 <!-- ===== Main ===== -->
 <main>
 <div class="toolbar">
-<select id="countryFilter"><option value="">节点池</option></select>
-<input type="text" id="excludeFilter" placeholder="排除IP前缀, 如 203.104" oninput="renderTable()" />
-<input type="text" id="searchInput" placeholder="搜索节点名称、IP 或标签..." oninput="renderTable()" />
+<select id="countryFilter"><option value="">闁煎搫鍊婚崑锝呅?/option></select>
+<input type="text" id="excludeFilter" placeholder="闁圭儤甯″▍宥狿闁告挸绉剁槐? 濠?203.104" oninput="renderTable()" />
+<input type="text" id="searchInput" placeholder="闁瑰吋绮庨崒銊╂嚍閸屾粌浠柛姘Ф琚ㄩ柕鍡曟诞P 闁瑰瓨鐗楅悥锝囩驳?.." oninput="renderTable()" />
 <div class="toolbar-actions">
-<button class="btn-primary" onclick="testAllNodes()">全部测试</button>
+<button class="btn-primary" onclick="testAllNodes()">闁稿繈鍔戦崕鏉懨圭€ｎ厾妲?/button>
 </div>
 </div>
 <div class="table-wrapper">
 <div class="table-container">
 <table>
-<thead><tr><th>节点名称</th><th>国家</th><th>出口 IP</th><th>ASN</th><th>延迟</th><th>节点速度</th><th>状态</th><th>操作</th></tr></thead>
+<thead><tr><th>闁煎搫鍊婚崑锝夊触瀹ュ泦?/th><th>闁搞儴妫勯?/th><th>闁告垵鎼ぐ?IP</th><th>ASN</th><th>鐎点倖鍎肩换?/th><th>闁煎搫鍊婚崑锝夋焻閻斿嘲顔?/th><th>闁绘鍩栭埀?/th><th>闁瑰灝绉崇紞?/th></tr></thead>
 <tbody id="tableBody"></tbody>
 </table>
 </div>
@@ -2473,21 +2468,21 @@ Telegram 群组
 <div class="modal" id="credentialsModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeCredentialsModal()">&times;</button>
-<div class="modal-title">账号凭据设置</div>
+<div class="modal-title">閻犳劧绠戣ぐ鍧楀礄椤撶喎绁﹂悹浣稿⒔閻?/div>
 <div class="form-error" id="credentialsError"></div>
 <div class="form-success" id="credentialsSuccess"></div>
 <form id="credentialsForm" onsubmit="saveCredentials(event)">
-<div class="form-group"><label class="form-label">用户名</label><input class="input-field" id="credUsername" required /></div>
-<div class="form-group"><label class="form-label">密码</label><input class="input-field" id="credPassword" type="password" /></div>
-<div class="form-group"><label class="form-label">网页管理端口</label><input class="input-field" id="credPort" type="number" value="8787" /></div>
-<div class="form-group"><label class="form-label">登录安全后缀</label><input class="input-field" id="credSuffix" placeholder="仅英文和数字" /></div>
-<div class="form-group"><label class="form-label">绑定域名（可选）</label><input class="input-field" id="credDomain" placeholder="例: admin.example.com" /></div>
-<div class="form-group" style="display:flex;align-items:center;gap:8px"><label class="form-label" style="white-space:nowrap">启用 HTTPS</label><input type="checkbox" id="credHttps" style="width:18px;height:18px;accent-color:var(--accent)" /> <span style="font-size:11px;color:var(--text-tertiary)">需要 SSL 证书文件</span></div>
-<div class="form-group"><label class="form-label">证书文件路径</label><input class="input-field" id="credCertPath" placeholder="/etc/ssl/certs/cert.pem" /></div>
-<div class="form-group"><label class="form-label">密钥文件路径</label><input class="input-field" id="credKeyPath" placeholder="/etc/ssl/certs/key.pem" /></div>
+<div class="form-group"><label class="form-label">闁活潿鍔嶉崺娑㈠触?/label><input class="input-field" id="credUsername" required /></div>
+<div class="form-group"><label class="form-label">閻庨潧妫涢悥?/label><input class="input-field" id="credPassword" type="password" /></div>
+<div class="form-group"><label class="form-label">缂傚啯鍨块妴澶岀不閿涘嫭鍊炵紒鏃戝灠瑜?/label><input class="input-field" id="credPort" type="number" value="8787" /></div>
+<div class="form-group"><label class="form-label">闁谎嗩嚙缂嶅秶鈧懓顦崣蹇涘触鎼达絿纾?/label><input class="input-field" id="credSuffix" placeholder="濞寸姴鎳撶€氭娊寮崶褎瀚查柡浣规緲閻? /></div>
+<div class="form-group"><label class="form-label">缂備焦鍨甸悾楣冨春閻旈攱鍊抽柨娑樼墕瑜版煡鏌呮径娑氱</label><input class="input-field" id="credDomain" placeholder="濞? admin.example.com" /></div>
+<div class="form-group" style="display:flex;align-items:center;gap:8px"><label class="form-label" style="white-space:nowrap">闁告凹鍨抽弫?HTTPS</label><input type="checkbox" id="credHttps" style="width:18px;height:18px;accent-color:var(--accent)" /> <span style="font-size:11px;color:var(--text-tertiary)">闂傚洠鍋撻悷?SSL 閻犲洣妞掗崝鐔煎棘閸ワ附顐?/span></div>
+<div class="form-group"><label class="form-label">閻犲洣妞掗崝鐔煎棘閸ワ附顐介悹渚灠缁?/label><input class="input-field" id="credCertPath" placeholder="/etc/ssl/certs/cert.pem" /></div>
+<div class="form-group"><label class="form-label">閻庨潧妫濋幐婊堝棘閸ワ附顐介悹渚灠缁?/label><input class="input-field" id="credKeyPath" placeholder="/etc/ssl/certs/key.pem" /></div>
 <div class="modal-actions">
-<button type="button" class="btn-secondary" onclick="closeCredentialsModal()">取消</button>
-<button type="submit" class="btn-primary" id="credentialsSubmitBtn">保存修改</button>
+<button type="button" class="btn-secondary" onclick="closeCredentialsModal()">闁告瑦鐗楃粔?/button>
+<button type="submit" class="btn-primary" id="credentialsSubmitBtn">濞ｅ洦绻傞悺銊︾┍椤旇姤鏆?/button>
 </div>
 </form>
 </div>
@@ -2497,25 +2492,25 @@ Telegram 群组
 <div class="modal" id="networkModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeNetworkModal()">&times;</button>
-<div class="modal-title">网络设置</div>
+<div class="modal-title">缂傚啯鍨圭划鍓佹媼閸撗呮瀭</div>
 <div class="form-error" id="networkError"></div>
 <div class="form-success" id="networkSuccess"></div>
 <form id="networkForm" onsubmit="saveNetwork(event)">
-<div class="form-group"><label class="form-label">代理出口端口</label><input class="input-field" id="netProxyPort" type="number" min="1024" max="65535" value="7928" /></div>
-<div class="form-group"><label class="form-label">路由模式</label><div class="option-group" id="routingModeGroup">
-<div class="option-card active" data-value="auto" onclick="selectOptionCard('routingMode','auto')"><div class="option-card-title">智能路由</div><div class="option-card-desc">自动选择最优 IP</div></div>
-<div class="option-card" data-value="fixed_region" onclick="selectOptionCard('routingMode','fixed_region')"><div class="option-card-title">区域锁定</div><div class="option-card-desc">锁定到指定国家</div></div>
-<div class="option-card" data-value="sequential" onclick="selectOptionCard('routingMode','sequential')"><div class="option-card-title">顺序路由</div><div class="option-card-desc">逐节点换 IP</div></div>
+<div class="form-group"><label class="form-label">濞寸媴绲块幃濠囧礄閸濆嫬缍撶紒鏃戝灠瑜?/label><input class="input-field" id="netProxyPort" type="number" min="1024" max="65535" value="7928" /></div>
+<div class="form-group"><label class="form-label">閻犱警鍨抽弫鍗炍熼垾宕囩</label><div class="option-group" id="routingModeGroup">
+<div class="option-card active" data-value="auto" onclick="selectOptionCard('routingMode','auto')"><div class="option-card-title">闁哄懘缂氶崗妯兼崉椤栨粍鏆?/div><div class="option-card-desc">闁煎浜滄慨鈺呮焻婢跺顏ラ柡鍫氬亾濞?IP</div></div>
+<div class="option-card" data-value="fixed_region" onclick="selectOptionCard('routingMode','fixed_region')"><div class="option-card-title">闁告牕鎼悡娆撴煥娴ｅ摜鏆?/div><div class="option-card-desc">闂佸じ绀侀悾楣冨礆閻楀牆鐦归悗瑙勮壘濞存鈧?/div></div>
+<div class="option-card" data-value="sequential" onclick="selectOptionCard('routingMode','sequential')"><div class="option-card-title">濡炪倕鎼花顓犳崉椤栨粍鏆?/div><div class="option-card-desc">闂侇偅鍔樻俊顓㈡倷鐟欏嫬搴?IP</div></div>
 </div><input type="hidden" id="netRoutingMode" value="auto" /></div>
-<div class="form-group" id="forceCountryGroup" style="display:none"><label class="form-label">锁定目标国家</label><select class="input-field" id="netForceCountry"><option value="">请选择...</option></select></div>
-<div class="form-group"><label class="form-label">IP 类型偏好</label><div class="option-group" id="routingIpTypeGroup">
-<div class="option-card active" data-value="all" onclick="selectOptionCard('routingIpType','all')"><div class="option-card-title">全部类型</div><div class="option-card-desc">IPv4 和 IPv6</div></div>
-<div class="option-card" data-value="ipv4" onclick="selectOptionCard('routingIpType','ipv4')"><div class="option-card-title">仅 IPv4</div><div class="option-card-desc">只使用 IPv4</div></div>
-<div class="option-card" data-value="ipv6" onclick="selectOptionCard('routingIpType','ipv6')"><div class="option-card-title">仅 IPv6</div><div class="option-card-desc">只使用 IPv6</div></div>
+<div class="form-group" id="forceCountryGroup" style="display:none"><label class="form-label">闂佸じ绀侀悾楣冩儎椤旂晫鍨奸柛銉ㄦ椤?/label><select class="input-field" id="netForceCountry"><option value="">閻犲洨鍏橀埀顒€顦扮€?..</option></select></div>
+<div class="form-group"><label class="form-label">IP 缂侇偉顕ч悗鐑藉磻韫囨挶鍋?/label><div class="option-group" id="routingIpTypeGroup">
+<div class="option-card active" data-value="all" onclick="selectOptionCard('routingIpType','all')"><div class="option-card-title">闁稿繈鍔戦崕瀵哥尵鐠囪尙鈧?/div><div class="option-card-desc">IPv4 闁?IPv6</div></div>
+<div class="option-card" data-value="ipv4" onclick="selectOptionCard('routingIpType','ipv4')"><div class="option-card-title">濞?IPv4</div><div class="option-card-desc">闁告瑯浜欐繛鍥偨?IPv4</div></div>
+<div class="option-card" data-value="ipv6" onclick="selectOptionCard('routingIpType','ipv6')"><div class="option-card-title">濞?IPv6</div><div class="option-card-desc">闁告瑯浜欐繛鍥偨?IPv6</div></div>
 </div><input type="hidden" id="netRoutingIpType" value="all" /></div>
 <div class="modal-actions">
-<button type="button" class="btn-secondary" onclick="closeNetworkModal()">取消</button>
-<button type="submit" class="btn-primary" id="networkSubmitBtn">保存修改</button>
+<button type="button" class="btn-secondary" onclick="closeNetworkModal()">闁告瑦鐗楃粔?/button>
+<button type="submit" class="btn-primary" id="networkSubmitBtn">濞ｅ洦绻傞悺銊︾┍椤旇姤鏆?/button>
 </div>
 </form>
 </div>
@@ -2525,17 +2520,17 @@ Telegram 群组
 <div class="modal" id="vpsModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeVpsModal()">&times;</button>
-<div class="modal-title">推荐 VPS</div>
+<div class="modal-title">闁规亽鍔忓畷?VPS</div>
 <p style="color:var(--text-secondary);font-size:13px;line-height:1.6">
-推荐使用以下 VPS 服务商部署节点：<br/><br/>
-&#8226; <strong style="color:var(--text-primary)">Vultr</strong> — 全球 32 个数据中心，最低 $2.5/月<br/>
-&#8226; <strong style="color:var(--text-primary)">Hetzner</strong> — 欧洲优质线路，性价比高<br/>
-&#8226; <strong style="color:var(--text-primary)">Oracle Cloud</strong> — 免费永久套餐（需抢购）<br/>
-&#8226; <strong style="color:var(--text-primary)">BandwagonHost</strong> — 中国优化线路<br/>
-&#8226; <strong style="color:var(--text-primary)">RackNerd</strong> — 低价年付方案<br/><br/>
-建议选择延迟 < 150ms 的节点以获得最佳体验。
+闁规亽鍔忓畷妯绘媴鐠恒劍鏆忓ù鐘劙缁?VPS 闁哄牆绉存慨鐔煎疮閸℃稑鍔ョ紓鍐蔼婵☆參鎮欓惂鍝ョ獥<br/><br/>
+&#8226; <strong style="color:var(--text-primary)">Vultr</strong> 闁?闁稿繈鍔庨幃?32 濞戞搩浜濋弳鐔煎箲椤旀槒鍘煫鍥у枦缁辨繈寮甸埀顒佹媴?$2.5/闁?br/>
+&#8226; <strong style="color:var(--text-primary)">Hetzner</strong> 闁?婵炲柌鍕哎濞村吋顭堝婵堢棯閼愁垳鐔呴柨娑樻湰閳ь儸鍌滃箚婵絾妫冮悵?br/>
+&#8226; <strong style="color:var(--text-primary)">Oracle Cloud</strong> 闁?闁稿繐绉烽崹鍌氼潩闂€鎰暯濠靛倹顨婇ˇ鐢告晬閸儲浠橀柟韬插灱閸犳﹢鏁?br/>
+&#8226; <strong style="color:var(--text-primary)">BandwagonHost</strong> 闁?濞戞搩鍘煎ù妤佸濡搫顕х紒鎹愬劵閻?br/>
+&#8226; <strong style="color:var(--text-primary)">RackNerd</strong> 闁?濞达絽绨奸悳顖炵嵁缂堢姷甯涢柡鍌濐潐椤?br/><br/>
+鐎点倝缂氶鍛存焻婢跺顏ョ€点倖鍎肩换?< 150ms 闁汇劌瀚俊顓㈡倷闁稐绨伴柤鎯у槻缁堕亶寮甸埀顒佹媴閸忓懐绉煎Δ鐘茶閳?
 </p>
-<div class="modal-actions"><button type="button" class="btn-secondary" onclick="closeVpsModal()">关闭</button></div>
+<div class="modal-actions"><button type="button" class="btn-secondary" onclick="closeVpsModal()">闁稿繑濞婂Λ?/button></div>
 </div>
 </div>
 
@@ -2544,11 +2539,11 @@ Telegram 群组
 <div class="modal" id="channelSelectModal">
 <div class="modal-content" style="max-width:400px">
 <button class="modal-close" onclick="closeChannelSelectModal()">&times;</button>
-<div class="modal-title" id="channelSelectTitle">选择目标通道</div>
+<div class="modal-title" id="channelSelectTitle">闂侇偄顦扮€氥劑鎯勯鐣屽灱闂侇偅宀告禍?/div>
 <p style="color:var(--text-secondary);font-size:13px;margin:0 0 16px 0" id="channelSelectNodeInfo"></p>
 <div id="channelSelectList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
 <div class="modal-actions" style="margin-top:12px">
-<button type="button" class="btn-secondary" onclick="closeChannelSelectModal()">取消</button>
+<button type="button" class="btn-secondary" onclick="closeChannelSelectModal()">闁告瑦鐗楃粔?/button>
 </div>
 </div>
 </div>
@@ -2556,9 +2551,9 @@ Telegram 群组
 <div class="modal" id="gatewayModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeGatewayModal()">&times;</button>
-<div class="modal-title">网关服务状态</div>
+<div class="modal-title">缂傚啯鍨甸崣褔寮靛鍛潳闁绘鍩栭埀?/div>
 <div id="gatewayServicesList"></div>
-<div class="modal-actions"><button type="button" class="btn-secondary" onclick="closeGatewayModal()">关闭</button></div>
+<div class="modal-actions"><button type="button" class="btn-secondary" onclick="closeGatewayModal()">闁稿繑濞婂Λ?/button></div>
 </div>
 </div>
 
@@ -2566,13 +2561,13 @@ Telegram 群组
 <div class="modal" id="logsModal">
 <div class="modal-content" style="max-width:720px">
 <button class="modal-close" onclick="closeLogsModal()">&times;</button>
-<div class="modal-title">运行日志</div>
+<div class="modal-title">閺夆晜鍔橀、鎴﹀籍閵夈儳绠?/div>
 <div class="log-filter-row">
-<select id="logFilterSelect" onchange="filterAndRenderLogs()"><option value="all">全部</option><option value="proxy">代理</option><option value="vpn">VPN</option><option value="system">系统</option></select>
-<button class="btn-secondary" onclick="copyLogContent()" style="height:36px;font-size:11px">复制</button>
-<button class="btn-secondary" onclick="exportLogContent()" style="height:36px;font-size:11px">导出</button>
+<select id="logFilterSelect" onchange="filterAndRenderLogs()"><option value="all">闁稿繈鍔戦崕?/option><option value="proxy">濞寸媴绲块幃?/option><option value="vpn">VPN</option><option value="system">缂侇垵宕电划?/option></select>
+<button class="btn-secondary" onclick="copyLogContent()" style="height:36px;font-size:11px">濠㈣泛绉撮崺?/button>
+<button class="btn-secondary" onclick="exportLogContent()" style="height:36px;font-size:11px">閻庣數鍘ч崵?/button>
 </div>
-<div class="log-terminal" id="logTerminalContainer"><div style="color:var(--text-tertiary);text-align:center;margin-top:150px">暂无日志</div></div>
+<div class="log-terminal" id="logTerminalContainer"><div style="color:var(--text-tertiary);text-align:center;margin-top:150px">闁哄棗鍊瑰Λ銈夊籍閵夈儳绠?/div></div>
 </div>
 </div>
 
@@ -2582,23 +2577,23 @@ function $(id) { return document.getElementById(id); }
 function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 var COUNTRY_MAP = {
-  'JP':'日本','US':'美国','SG':'新加坡','KR':'韩国','GB':'英国','DE':'德国',
-  'FR':'法国','CA':'加拿大','AU':'澳大利亚','NL':'荷兰','HK':'香港','TW':'台湾',
-  'IN':'印度','BR':'巴西','RU':'俄罗斯','CH':'瑞士','SE':'瑞典','NO':'挪威',
-  'IT':'意大利','ES':'西班牙','Unknown':'未知'
+  'JP':'闁哄啨鍎插﹢?,'US':'缂傚洤楠稿ù?,'SG':'闁哄倹婢樻慨鐐哄锤?,'KR':'闂傚ň鏅涘ù?,'GB':'闁艰宕ù?,'DE':'鐎垫澘鍢插ù?,
+  'FR':'婵炲娲栧ù?,'CA':'闁告梻濮电€ｄ焦寰?,'AU':'婵犮垹鍟块妵鍥礆閳衡偓缁?,'NL':'闁艰棄鍢查崣?,'HK':'濡絾鐟﹂懙?,'TW':'闁告瑧澧楅崪?,
+  'IN':'闁告婢樼€?,'BR':'鐎瑰摜顥愰妶?,'RU':'濞ｅ洤瀚紞蹇涘棘?,'CH':'闁荤喓鍋涢敍?,'SE':'闁荤喓鍋涢崥鈧?,'NO':'闁瑰壊浜滈埢?,
+  'IT':'闁规澘绻愰妵鍥礆?,'ES':'閻熸娉曡ぐ顕€鎮?,'Unknown':'闁哄牜浜為悡?
 };
 function translateCountry(code) { return COUNTRY_MAP[code] || code || ''; }
 
 var COUNTRIES = [
-  {name:'自动',short:''},{name:'日本',short:'JP'},{name:'美国',short:'US'},{name:'韩国',short:'KR'},
-  {name:'新加坡',short:'SG'},{name:'英国',short:'GB'},{name:'德国',short:'DE'},{name:'法国',short:'FR'},
-  {name:'加拿大',short:'CA'},{name:'澳大利亚',short:'AU'},{name:'荷兰',short:'NL'},{name:'香港',short:'HK'},
-  {name:'台湾',short:'TW'},{name:'印度',short:'IN'},{name:'巴西',short:'BR'},{name:'俄罗斯',short:'RU'},
-  {name:'瑞士',short:'CH'},{name:'瑞典',short:'SE'},{name:'挪威',short:'NO'},{name:'意大利',short:'IT'},{name:'西班牙',short:'ES'}
+  {name:'闁煎浜滄慨?,short:''},{name:'闁哄啨鍎插﹢?,short:'JP'},{name:'缂傚洤楠稿ù?,short:'US'},{name:'闂傚ň鏅涘ù?,short:'KR'},
+  {name:'闁哄倹婢樻慨鐐哄锤?,short:'SG'},{name:'闁艰宕ù?,short:'GB'},{name:'鐎垫澘鍢插ù?,short:'DE'},{name:'婵炲娲栧ù?,short:'FR'},
+  {name:'闁告梻濮电€ｄ焦寰?,short:'CA'},{name:'婵犮垹鍟块妵鍥礆閳衡偓缁?,short:'AU'},{name:'闁艰棄鍢查崣?,short:'NL'},{name:'濡絾鐟﹂懙?,short:'HK'},
+  {name:'闁告瑧澧楅崪?,short:'TW'},{name:'闁告婢樼€?,short:'IN'},{name:'鐎瑰摜顥愰妶?,short:'BR'},{name:'濞ｅ洤瀚紞蹇涘棘?,short:'RU'},
+  {name:'闁荤喓鍋涢敍?,short:'CH'},{name:'闁荤喓鍋涢崥鈧?,short:'SE'},{name:'闁瑰壊浜滈埢?,short:'NO'},{name:'闁规澘绻愰妵鍥礆?,short:'IT'},{name:'閻熸娉曡ぐ顕€鎮?,short:'ES'}
 ];
 
-function getCountryOptions() { var cm={}; (nodes.length?nodes:sampleNodes).forEach(function(n){ var c=n.country||''; if(c)cm[c]=1; }); var keys=Object.keys(cm).sort(); return ['','自动'].concat(keys); }
-var asnOptions = ['','自动','AS4713','AS16509','AS15169','AS8075','AS45102','AS16276','AS24940','AS12876','AS4766'];
+function getCountryOptions() { var cm={}; (nodes.length?nodes:sampleNodes).forEach(function(n){ var c=n.country||''; if(c)cm[c]=1; }); var keys=Object.keys(cm).sort(); return ['','闁煎浜滄慨?].concat(keys); }
+var asnOptions = ['','闁煎浜滄慨?,'AS4713','AS16509','AS15169','AS8075','AS45102','AS16276','AS24940','AS12876','AS4766'];
 
 // ===== State =====
 var nodes = [];
@@ -2617,21 +2612,21 @@ for (var si = 0; si < 6; si++) {
     index: si, exit_ip: '203.104.'+(209+Math.floor(si/3))+'.'+(15+si*7),
     asn: 'AS'+(4000+si*113), asn_org: ['NTT Communications','Amazon AWS','Google Cloud','Microsoft Azure','SoftBank','KDDI'][si],
     speed: (Math.random()*45+5).toFixed(1), speed_unit:'MB/s', latency: Math.floor(Math.random()*180+25),
-    online: false, connecting:false, country:['日本','美国','新加坡','韩国','英国','德国'][si],
+    online: false, connecting:false, country:['闁哄啨鍎插﹢?,'缂傚洤楠稿ù?,'闁哄倹婢樻慨鐐哄锤?,'闂傚ň鏅涘ù?,'闁艰宕ù?,'鐎垫澘鍢插ù?][si],
     lock_country:'', lock_asn:'', port:7928+si
   });
 }
 var sampleNodes = [
-  {name:'日本 · JP-1',country:'日本',ip:'203.104.209.15',asn:'AS4713',asn_org:'NTT Communications',latency:42,speed:28.4,status:'available'},
-  {name:'日本 · JP-2',country:'日本',ip:'203.104.209.22',asn:'AS4713',asn_org:'NTT Communications',latency:45,speed:26.1,status:'available'},
-  {name:'美国 · US-1',country:'美国',ip:'198.51.100.10',asn:'AS16509',asn_org:'Amazon AWS',latency:128,speed:18.7,status:'available'},
-  {name:'美国 · US-2',country:'美国',ip:'198.51.100.25',asn:'AS15169',asn_org:'Google Cloud',latency:135,speed:15.2,status:'available'},
-  {name:'新加坡 · SG-1',country:'新加坡',ip:'103.25.59.10',asn:'AS45102',asn_org:'Tencent Cloud',latency:68,speed:32.1,status:'available'},
-  {name:'新加坡 · SG-2',country:'新加坡',ip:'103.25.59.18',asn:'AS45102',asn_org:'Tencent Cloud',latency:72,speed:29.8,status:'available'},
-  {name:'韩国 · KR-1',country:'韩国',ip:'121.78.105.30',asn:'AS4766',asn_org:'Korea Telecom',latency:55,speed:35.6,status:'available'},
-  {name:'韩国 · KR-2',country:'韩国',ip:'121.78.105.38',asn:'AS4766',asn_org:'Korea Telecom',latency:58,speed:33.2,status:'pending'},
-  {name:'英国 · GB-1',country:'英国',ip:'51.15.72.10',asn:'AS12876',asn_org:'Online SAS',latency:182,speed:11.4,status:'available'},
-  {name:'德国 · DE-1',country:'德国',ip:'78.46.82.15',asn:'AS24940',asn_org:'Hetzner Online',latency:195,speed:9.8,status:'unavailable'}
+  {name:'闁哄啨鍎插﹢?鐠?JP-1',country:'闁哄啨鍎插﹢?,ip:'203.104.209.15',asn:'AS4713',asn_org:'NTT Communications',latency:42,speed:28.4,status:'available'},
+  {name:'闁哄啨鍎插﹢?鐠?JP-2',country:'闁哄啨鍎插﹢?,ip:'203.104.209.22',asn:'AS4713',asn_org:'NTT Communications',latency:45,speed:26.1,status:'available'},
+  {name:'缂傚洤楠稿ù?鐠?US-1',country:'缂傚洤楠稿ù?,ip:'198.51.100.10',asn:'AS16509',asn_org:'Amazon AWS',latency:128,speed:18.7,status:'available'},
+  {name:'缂傚洤楠稿ù?鐠?US-2',country:'缂傚洤楠稿ù?,ip:'198.51.100.25',asn:'AS15169',asn_org:'Google Cloud',latency:135,speed:15.2,status:'available'},
+  {name:'闁哄倹婢樻慨鐐哄锤?鐠?SG-1',country:'闁哄倹婢樻慨鐐哄锤?,ip:'103.25.59.10',asn:'AS45102',asn_org:'Tencent Cloud',latency:68,speed:32.1,status:'available'},
+  {name:'闁哄倹婢樻慨鐐哄锤?鐠?SG-2',country:'闁哄倹婢樻慨鐐哄锤?,ip:'103.25.59.18',asn:'AS45102',asn_org:'Tencent Cloud',latency:72,speed:29.8,status:'available'},
+  {name:'闂傚ň鏅涘ù?鐠?KR-1',country:'闂傚ň鏅涘ù?,ip:'121.78.105.30',asn:'AS4766',asn_org:'Korea Telecom',latency:55,speed:35.6,status:'available'},
+  {name:'闂傚ň鏅涘ù?鐠?KR-2',country:'闂傚ň鏅涘ù?,ip:'121.78.105.38',asn:'AS4766',asn_org:'Korea Telecom',latency:58,speed:33.2,status:'pending'},
+  {name:'闁艰宕ù?鐠?GB-1',country:'闁艰宕ù?,ip:'51.15.72.10',asn:'AS12876',asn_org:'Online SAS',latency:182,speed:11.4,status:'available'},
+  {name:'鐎垫澘鍢插ù?鐠?DE-1',country:'鐎垫澘鍢插ù?,ip:'78.46.82.15',asn:'AS24940',asn_org:'Hetzner Online',latency:195,speed:9.8,status:'unavailable'}
 ];
 
 // ===== Data Loading =====
@@ -2643,7 +2638,7 @@ async function load() {
     nodes = nodes.map(function(n){ if(n.latency==null&&n.latency_ms!=null)n.latency=n.latency_ms; if(n.latency==null&&n.ping!=null)n.latency=n.ping; if(!n.name)n.name=n.host_name||n.id||''; if(!n.status)n.status=n.probe_status||(n.active?'available':'pending'); return n; });
     state = d.state || {};
     updateDomainBar(state);
-    $('systemStatus').innerHTML = '<span class=\"dot\"></span>系统运行中';
+    $('systemStatus').innerHTML = '<span class=\"dot\"></span>缂侇垵宕电划鐑樻交閹邦垼鏀藉☉?;
     updateCountryFilter();
     renderChannels();
     renderTable();
@@ -2669,7 +2664,7 @@ function updateDomainBar(s) {
   if (domain) {
     var proto = https ? 'https' : 'http';
     var portStr = (proto==='https'&&port===443)||(proto==='http'&&port===80) ? '' : ':'+port;
-    urlEl.innerHTML = '<span style="color:var(--text-secondary)">访问地址: </span><a href="'+proto+'://'+domain+portStr+'/'+suffix+'/" target="_blank" style="color:var(--accent);text-decoration:none">'+proto+'://'+domain+portStr+'/'+suffix+'/</a>';
+    urlEl.innerHTML = '<span style="color:var(--text-secondary)">閻犱礁娼″Λ鍫曞捶閺夋寧绲? </span><a href="'+proto+'://'+domain+portStr+'/'+suffix+'/" target="_blank" style="color:var(--accent);text-decoration:none">'+proto+'://'+domain+portStr+'/'+suffix+'/</a>';
     bar.style.display = 'block';
   } else {
     bar.style.display = 'none';
@@ -2686,9 +2681,9 @@ function updateCountryFilter() {
     if (c) countMap[c] = (countMap[c]||0)+1;
   });
   var countries = Object.keys(countMap).sort();
-  var html = '<option value="">节点池</option>';
+  var html = '<option value="">闁煎搫鍊婚崑锝呅?/option>';
   countries.forEach(function(c) {
-    html += '<option value="'+esc(c)+'">'+esc(c)+' ('+countMap[c]+'个节点)</option>';
+    html += '<option value="'+esc(c)+'">'+esc(c)+' ('+countMap[c]+'濞戞搩浜ｆ俊顓㈡倷?</option>';
   });
   sel.innerHTML = html;
 }
@@ -2697,7 +2692,7 @@ function updateCountryFilter() {
 function buildCountrySelect(selected) {
   var h = '';
   for (var i=0;i<getCountryOptions().length;i++) {
-    var v=getCountryOptions()[i], label=v||'自动', val=v||'', sel=(val===selected)?' selected':'';
+    var v=getCountryOptions()[i], label=v||'闁煎浜滄慨?, val=v||'', sel=(val===selected)?' selected':'';
     h += '<option value="'+val+'"'+sel+'>'+label+'</option>';
   }
   return h;
@@ -2708,18 +2703,18 @@ function buildAsnSelectForChannel(selected, countryFilter) {
   var asnMap = {};
   list.forEach(function(n){ var a = n.asn||""; if(a) asnMap[a]=(asnMap[a]||0)+1; });
   var asns = Object.keys(asnMap).sort();
-  var h = "<option value=\"\">自动</option>";
-  asns.forEach(function(a){ var cnt=asnMap[a]>1?"("+asnMap[a]+"个)":""; var s=(a===selected)?" selected":""; h+="<option value=\""+a+"\""+s+">"+a+cnt+"</option>"; });
-  if(!asns.length) h += "<option value=\"\" disabled>无可用ASN</option>";
+  var h = "<option value=\"\">闁煎浜滄慨?/option>";
+  asns.forEach(function(a){ var cnt=asnMap[a]>1?"("+asnMap[a]+"濞?":""; var s=(a===selected)?" selected":""; h+="<option value=\""+a+"\""+s+">"+a+cnt+"</option>"; });
+  if(!asns.length) h += "<option value=\"\" disabled>闁哄啰濮磋ぐ鏌ユ偨钘N</option>";
   return h;
 }
 function buildNodeSelectForChannel(countryFilter, asnFilter, selected) {
   var list = (nodes.length ? nodes : sampleNodes);
   if (countryFilter) list = list.filter(function(n){ return (n.country||"")===countryFilter; });
   if (asnFilter) list = list.filter(function(n){ return (n.asn||"")===asnFilter; });
-  var h = "<option value=\"\">自动选择</option>";
+  var h = "<option value=\"\">闁煎浜滄慨鈺呮焻婢跺顏?/option>";
   list.forEach(function(n){ var s=(n.name===selected||n.id===selected)?" selected":""; var label=n.name||n.ip||""; h+="<option value=\""+esc(n.name)+"\""+s+">"+esc(label)+" ("+esc(n.ip||"")+")</option>"; });
-  if(!list.length) h += "<option value=\"\" disabled>无匹配节点</option>";
+  if(!list.length) h += "<option value=\"\" disabled>闁哄啰濮寸亸顕€鏌婂鍫澪濋柣?/option>";
   return h;
 }
 
@@ -2736,7 +2731,7 @@ function renderChannels() {
     var speedUnit = ch.online ? (ch.speed_unit||'') : '';
     var barWidth = ch.online ? Math.min(100,Math.floor(parseFloat(speedVal)*3)) : 0;
     var ipDisplay = ch.online ? (ch.exit_ip||'--.--.--.--') : '--.--.--.--';
-    var asnDisplay = ch.online ? ((ch.asn||'')+' · '+(ch.asn_org||'')) : '--';
+    var asnDisplay = ch.online ? ((ch.asn||'')+' 鐠?'+(ch.asn_org||'')) : '--';
     var latencyDisplay = ch.online ? (ch.latency>0?ch.latency:'-') : '-';
     var latencyClass = '';
     if (ch.online && ch.latency!=null) {
@@ -2744,15 +2739,15 @@ function renderChannels() {
     }
     var country = ch.country || '';
     html += '<div class="channel-card '+activeClass+'">'+
-      '<div class="channel-card-header"><div style="display:flex;align-items:center;gap:6px"><span class="channel-num">'+i+'</span><span class="channel-card-title">通道'+i+'</span><span class="channel-port-label">:'+(ch.port||(7928+i))+'</span></div><span class="channel-card-status '+statusClass+'"></span></div>'+
-      '<div class="channel-card-ip" title="'+ipDisplay+'"><span style="font-size:9px;color:var(--text-tertiary);font-weight:400;font-family:Inter,sans-serif;margin-right:4px">出口IP </span>'+ipDisplay+'</div>'+
+      '<div class="channel-card-header"><div style="display:flex;align-items:center;gap:6px"><span class="channel-num">'+i+'</span><span class="channel-card-title">闂侇偅宀告禍?+i+'</span><span class="channel-port-label">:'+(ch.port||(7928+i))+'</span></div><span class="channel-card-status '+statusClass+'"></span></div>'+
+      '<div class="channel-card-ip" title="'+ipDisplay+'"><span style="font-size:9px;color:var(--text-tertiary);font-weight:400;font-family:Inter,sans-serif;margin-right:4px">闁告垵鎼ぐ姹璓 </span>'+ipDisplay+'</div>'+
       '<div class="channel-card-details"><span class="channel-card-asn">'+asnDisplay+'</span>'+(ch.online&&country?'<span style="color:var(--text-tertiary)">'+esc(country)+'</span>':'')+'</div>'+
-      '<div class="channel-card-metrics"><span class="metric-item"><span class="metric-label">时延</span><span class="latency-val '+latencyClass+'">'+latencyDisplay+' ms</span></span>'+
-      '<span class="metric-item"><span class="metric-label">速度</span><span class="speed-val">'+speedVal+'</span><span style="font-size:8px;color:var(--text-tertiary)">'+speedUnit+'</span><span class="speed-bar"><span class="speed-bar-fill" style="width:'+barWidth+'%"></span></span></span></div>'+
-      '<div class="channel-lock-options"><span class="lock-label lock-select-country">国家</span><select onchange="setChannelCountry('+i+',this.value)">'+buildCountrySelect(ch.lock_country||'')+'</select>'+
-      '<span class="lock-label lock-select-asn">ASN</span><select onchange="setChannelAsn('+i+',this.value)">'+buildAsnSelectForChannel(ch.lock_asn||'',ch.lock_country||'')+'</select><span class="lock-label" style="font-size:8px;color:var(--text-tertiary)">节点</span><select onchange="setChannelNode('+i+',this.value)">'+buildNodeSelectForChannel(ch.lock_country||'',ch.lock_asn||'',ch.lock_node||'')+'</select></div>'+
-      '<div class="channel-card-footer"><div class="channel-conn-status"><span class="dot-sm '+(ch.online?'connected':'disconnected')+'"></span><span class="'+(ch.online?'text-connected':'text-disconnected')+'">'+(ch.online?'已连接':'未连接')+'</span></div>'+
-      (ch.online?'<button class="channel-disconnect-btn" onclick="disconnectChannel('+i+')">断开</button>':'<button class="channel-connect-btn" onclick="connectChannel('+i+')">连接</button>')+
+      '<div class="channel-card-metrics"><span class="metric-item"><span class="metric-label">闁哄啳娉涘▎?/span><span class="latency-val '+latencyClass+'">'+latencyDisplay+' ms</span></span>'+
+      '<span class="metric-item"><span class="metric-label">闂侇偆鍠庣€?/span><span class="speed-val">'+speedVal+'</span><span style="font-size:8px;color:var(--text-tertiary)">'+speedUnit+'</span><span class="speed-bar"><span class="speed-bar-fill" style="width:'+barWidth+'%"></span></span></span></div>'+
+      '<div class="channel-lock-options"><span class="lock-label lock-select-country">闁搞儴妫勯?/span><select onchange="setChannelCountry('+i+',this.value)">'+buildCountrySelect(ch.lock_country||'')+'</select>'+
+      '<span class="lock-label lock-select-asn">ASN</span><select onchange="setChannelAsn('+i+',this.value)">'+buildAsnSelectForChannel(ch.lock_asn||'',ch.lock_country||'')+'</select><span class="lock-label" style="font-size:8px;color:var(--text-tertiary)">闁煎搫鍊婚崑?/span><select onchange="setChannelNode('+i+',this.value)">'+buildNodeSelectForChannel(ch.lock_country||'',ch.lock_asn||'',ch.lock_node||'')+'</select></div>'+
+      '<div class="channel-card-footer"><div class="channel-conn-status"><span class="dot-sm '+(ch.online?'connected':'disconnected')+'"></span><span class="'+(ch.online?'text-connected':'text-disconnected')+'">'+(ch.online?'鐎规瓕灏换娑㈠箳?:'闁哄牜浜ｇ换娑㈠箳?)+'</span></div>'+
+      (ch.online?'<button class="channel-disconnect-btn" onclick="disconnectChannel('+i+')">闁哄偆鍘肩槐?/button>':'<button class="channel-connect-btn" onclick="connectChannel('+i+')">閺夆晝鍋炵敮?/button>')+
       '</div></div>';
   }
   grid.innerHTML = html;
@@ -2782,12 +2777,12 @@ function renderTable() {
     var n=list[i];
     var isActive = n.is_current || (i===0 && !nodes.length);
     var statusLabel='', statusBadgeClass='';
-    if (n.status==='available'||n.status==='online') { statusLabel='可用'; statusBadgeClass='badge-available'; }
-    else if (n.status==='unavailable'||n.status==='offline') { statusLabel='不可用'; statusBadgeClass='badge-unavailable'; }
-    else if (n.status==='pending') { statusLabel='待测'; statusBadgeClass='badge-pending'; }
-    else { statusLabel='可用'; statusBadgeClass='badge-available'; }
+    if (n.status==='available'||n.status==='online') { statusLabel='闁告瑯鍨抽弫?; statusBadgeClass='badge-available'; }
+    else if (n.status==='unavailable'||n.status==='offline') { statusLabel='濞戞挸绉磋ぐ鏌ユ偨?; statusBadgeClass='badge-unavailable'; }
+    else if (n.status==='pending') { statusLabel='鐎垫澘鎳忕粊?; statusBadgeClass='badge-pending'; }
+    else { statusLabel='闁告瑯鍨抽弫?; statusBadgeClass='badge-available'; }
     var latencyClass = n.latency>0 ? (n.latency<80 ? 'latency-good' : (n.latency<160 ? 'latency-medium' : 'latency-poor')) : '';
-    var asnDisplay = (n.asn||'')+' · '+(n.asn_org||'');
+    var asnDisplay = (n.asn||'')+' 鐠?'+(n.asn_org||'');
     var isTesting = testingNodeIds.has(n.name);
     html += '<tr class="'+(isActive?'active-row':'')+'">'+
       '<td style="font-weight:600;color:var(--text-primary)">'+esc(n.name||'')+'</td>'+
@@ -2796,10 +2791,10 @@ function renderTable() {
       '<td class="mono" style="font-size:11px;color:var(--text-tertiary)">'+esc(asnDisplay)+'</td>'+
       '<td><span class="latency-val '+latencyClass+'">'+(n.latency>0?n.latency:'-')+' ms</span></td>'+
       '<td style="font-family:\'JetBrains Mono\',monospace;font-weight:500;color:var(--text-primary)">'+(n.speed!=null?n.speed:'-')+' MB/s</td>'+
-      '<td><span class="badge '+statusBadgeClass+'">'+(statusLabel==='可用'?'<span class="badge-pulse"></span>':'')+statusLabel+'</span></td>'+
+      '<td><span class="badge '+statusBadgeClass+'">'+(statusLabel==='闁告瑯鍨抽弫??'<span class="badge-pulse"></span>':'')+statusLabel+'</span></td>'+
       '<td><div class="table-actions">'+
-      '<button class="connect-btn"'+(n.status==='unavailable'||n.status==='offline'||isTesting?' disabled':'')+' onclick="openChannelSelectModal(\''+esc(n.id||n.name)+'\',\''+esc(n.name||n.ip||'')+'\',\''+esc(n.country||'')+'\',\''+esc(n.asn||'')+'\')">连接</button>'+
-      '<button class="test-btn"'+(n.status==='unavailable'||n.status==='offline'||isTesting?' disabled':'')+' onclick="testNode(\''+esc(n.name)+'\')">'+(isTesting?'测速中...':'测速')+'</button>'+
+      '<button class="connect-btn"'+(n.status==='unavailable'||n.status==='offline'||isTesting?' disabled':'')+' onclick="openChannelSelectModal(\''+esc(n.id||n.name)+'\',\''+esc(n.name||n.ip||'')+'\',\''+esc(n.country||'')+'\',\''+esc(n.asn||'')+'\')">閺夆晝鍋炵敮?/button>'+
+      '<button class="test-btn"'+(n.status==='unavailable'||n.status==='offline'||isTesting?' disabled':'')+' onclick="testNode(\''+esc(n.name)+'\')">'+(isTesting?'婵炴潙顑夐埀顒傚枍閼?..':'婵炴潙顑夐埀?)+'</button>'+
       '</div></td></tr>';
   }
   tbody.innerHTML = html;
@@ -2813,9 +2808,9 @@ async function selectNode(name) {
       body:JSON.stringify({id:name})
     });
     var d = await r.json();
-    if (d.error) { alert('连接失败: '+d.error); return; }
+    if (d.error) { alert('閺夆晝鍋炵敮瀛樺緞鏉堫偉袝: '+d.error); return; }
     await load();
-  } catch(e) { alert('连接请求失败，请检查网络'); }
+  } catch(e) { alert('閺夆晝鍋炵敮瀵告嫚闁垮婀村鎯扮簿鐟欙箓鏁嶅畝鍐惧殲婵☆偀鍋撻柡灞诲劤缂嶅绱?); }
 }
 
 
@@ -2824,14 +2819,14 @@ var _selNode = null;
 
 function openChannelSelectModal(nid, label, country, asn) {
   _selNode = {id:nid, label:label, country:country, asn:asn};
-  $("channelSelectTitle").textContent = "选择目标通道";
-  $("channelSelectNodeInfo").innerHTML = "节点: <strong>"+esc(label)+"</strong> ("+esc(country)+(asn?" \u00b7 "+esc(asn):"")+")";
+  $("channelSelectTitle").textContent = "闂侇偄顦扮€氥劑鎯勯鐣屽灱闂侇偅宀告禍?;
+  $("channelSelectNodeInfo").innerHTML = "闁煎搫鍊婚崑? <strong>"+esc(label)+"</strong> ("+esc(country)+(asn?" \u00b7 "+esc(asn):"")+")";
   var box = $("channelSelectList");
   box.innerHTML = "";
   for (var ci=0; ci<6; ci++) {
     var b = document.createElement("button");
     b.className = "channel-select-btn";
-    b.textContent = "通道 "+ci;
+    b.textContent = "闂侇偅宀告禍?"+ci;
     b.onclick = (function(i){ return function(){ _assignChannel(i); }; })(ci);
     box.appendChild(b);
   }
@@ -2892,7 +2887,7 @@ async function connectChannel(idx) {
   if (ch.lock_country) list = list.filter(function(n){ return (n.country||'')===ch.lock_country; });
   if (ch.lock_asn) list = list.filter(function(n){ return (n.asn||'')===ch.lock_asn; });
   if (ch.lock_node) list = list.filter(function(n){ return (n.name===ch.lock_node||n.id===ch.lock_node); });
-  if (!list.length) { alert('没有匹配的节点，请检查国家/ASN/节点选择'); return; }
+  if (!list.length) { alert('婵炲备鍓濆﹢渚€宕犺ぐ鎺戝赋闁汇劌瀚俊顓㈡倷閻у摜绀夐悹鍥敱椤ュ懘寮婚妷銉︾閻?ASN/闁煎搫鍊婚崑锝夋焻婢跺顏?); return; }
   var target = list[0];
   ch.connecting = true;
   ch.online = false;
@@ -2913,11 +2908,11 @@ async function connectChannel(idx) {
       ch.asn_org = target.asn_org || '';
       ch.country = target.country || '';
     } else {
-      alert('连接失败: '+(d.error||'未知错误'));
+      alert('閺夆晝鍋炵敮瀛樺緞鏉堫偉袝: '+(d.error||'闁哄牜浜為悡锟犳煥濞嗘帩鍤?));
       ch.connecting = false;
     }
   } catch(e) {
-    alert('连接请求失败');
+    alert('閺夆晝鍋炵敮瀵告嫚闁垮婀村鎯扮簿鐟?);
     ch.connecting = false;
   }
   renderChannels();
@@ -2967,14 +2962,14 @@ async function setChannelCountryRemote(channel, country) {
 }
 
 // ===== Admin Dropdown =====
-function toggleDropdown() {
-  var dd = $('adminDropdown');
-  dd.style.display = dd.style.display==='block' ? 'none' : 'block';
-}
-document.addEventListener('click', function(e) {
-  var dd=$('adminDropdown');
-  if(dd&&!e.target.closest('.dropdown')) dd.style.display='none';
-});
+// ===== Admin Dropdown (always visible) =====
+
+
+
+
+
+
+
 
 async function logoutAdmin() {
   try {
@@ -2999,7 +2994,7 @@ function openCredentialsModal() {
     $('credKeyPath').value = state.key_path||'';
   }
   $('credentialsModal').style.display='flex';
-  $('adminDropdown').style.display='none';
+  // (always visible)
 }
 function closeCredentialsModal() { $('credentialsModal').style.display='none'; }
 
@@ -3014,18 +3009,18 @@ async function saveCredentials(e) {
   var certPath=$('credCertPath').value.trim();
   var keyPath=$('credKeyPath').value.trim();
   if (!username||(!password&&!(state&&state.password_set))) {
-    errorEl.textContent='用户名不能为空；首次设置时密码不能为空';
+    errorEl.textContent='闁活潿鍔嶉崺娑㈠触瀹ュ嫮鐟濋柤铏灊鐠愮喓绮氶悮瀵稿耿濡絾鐗楅鑲╂媼閸撗呮瀭闁哄啳娉涢惁鎴︽儘娴ｉ鐟濋柤铏灊鐠愮喓绮?;
     errorEl.style.display='block'; return;
   }
   if (isNaN(port)||port<1||port>65535) {
-    errorEl.textContent='端口范围必须在 1 到 65535 之间';
+    errorEl.textContent='缂佹棏鍨拌ぐ娑㈡嚑閸愩劍绾煫鍥ф嚇閵嗗繘宕?1 闁?65535 濞戞柨顑夊Λ?;
     errorEl.style.display='block'; return;
   }
   if (!/^[A-Za-z0-9]+$/.test(suffix)) {
-    errorEl.textContent='登录安全后缀仅能由英文字母和数字组成';
+    errorEl.textContent='闁谎嗩嚙缂嶅秶鈧懓顦崣蹇涘触鎼达絿纾诲ù鐘叉嚀閸忔﹢鎮芥潏顐㈩伆闁哄倸娲ら悺褍袙瀹ュ懏瀚查柡浣规緲閻⊙呯磼閸曨剙鐏?;
     errorEl.style.display='block'; return;
   }
-  btn.disabled=true; btn.textContent='正在保存...';
+  btn.disabled=true; btn.textContent='婵繐绲藉﹢顏呯┍濠靛棛鎽?..';
   try {
     var r = await fetch('./api/update_credentials', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -3033,19 +3028,19 @@ async function saveCredentials(e) {
     });
     var d = await r.json();
     if (r.ok&&d.ok) {
-      successEl.textContent=d.restart_needed?'保存成功！端口或路径已变更，页面将自动跳转...':'保存成功，已即时生效！';
+      successEl.textContent=d.restart_needed?'濞ｅ洦绻傞悺銊╁箣閹邦剙顫犻柨娑楄兌椤忣剟宕ｉ敐鍡楃仐閻犱警鍨扮欢鐐差啅閹绘帒缍侀柡鍥彧缁辨繃銇勯悽鍛婃〃閻忓繐妫滈崵婊堝礉閵娿劎鍎查弶?..':'濞ｅ洦绻傞悺銊╁箣閹邦剙顫犻柨娑樿嫰閸戯繝宕￠搹顐ｎ槯闁汇垻鍠愰弲銉╂晬?;
       successEl.style.display='block';
       setTimeout(function(){
         if(d.restart_needed){window.location.reload();}
         else{closeCredentialsModal();load();}
       }, d.restart_needed?4000:1500);
     } else {
-      errorEl.textContent=d.error||'保存失败，请检查输入';
-      errorEl.style.display='block'; btn.disabled=false; btn.textContent='保存修改';
+      errorEl.textContent=d.error||'濞ｅ洦绻傞悺銊﹀緞鏉堫偉袝闁挎稑鐭侀顒€螞閳ь剟寮婚妷銊х炕闁?;
+      errorEl.style.display='block'; btn.disabled=false; btn.textContent='濞ｅ洦绻傞悺銊︾┍椤旇姤鏆?;
     }
   } catch(err) {
-    errorEl.textContent='连接服务器失败，请稍后重试';
-    errorEl.style.display='block'; btn.disabled=false; btn.textContent='保存修改';
+    errorEl.textContent='閺夆晝鍋炵敮鎾嫉瀹ュ懎顫ら柛锝冨妼閵囨垹鎷归妷顖滅閻犲洭顥撻埣銏ゅ触鎼淬劌娅㈤悹?;
+    errorEl.style.display='block'; btn.disabled=false; btn.textContent='濞ｅ洦绻傞悺銊︾┍椤旇姤鏆?;
   }
 }
 
@@ -3067,14 +3062,14 @@ function openNetworkModal() {
     (nodes.length?nodes:sampleNodes).forEach(function(n){
       var c=n.country||''; if(c)countMap[c]=(countMap[c]||0)+1;
     });
-    var html='<option value="">请选择要锁定的国家...</option>';
+    var html='<option value="">閻犲洨鍏橀埀顒€顦扮€氥劎鎲版笟鈧弨锝団偓瑙勬皑濞堟垿宕堕挊澶樺晙...</option>';
     Object.keys(countMap).sort().forEach(function(c){
-      html+='<option value="'+esc(c)+'">'+esc(c)+' ('+countMap[c]+'个节点)</option>';
+      html+='<option value="'+esc(c)+'">'+esc(c)+' ('+countMap[c]+'濞戞搩浜ｆ俊顓㈡倷?</option>';
     });
     frcSel.innerHTML=html;
   }
   $('networkModal').style.display='flex';
-  $('adminDropdown').style.display='none';
+  // (always visible)
 }
 function closeNetworkModal() { $('networkModal').style.display='none'; }
 
@@ -3087,9 +3082,9 @@ async function saveNetwork(e) {
   var forceCountry=$('netForceCountry').value;
   var routingIpType=$('netRoutingIpType').value;
   if (isNaN(proxyPort)||proxyPort<1024||proxyPort>65535) {
-    errorEl.textContent='代理出口端口范围必须在 1024 到 65535 之间'; errorEl.style.display='block'; return;
+    errorEl.textContent='濞寸媴绲块幃濠囧礄閸濆嫬缍撶紒鏃戝灠瑜版盯鎳犻崘銊︾函闊洤鎳橀妴蹇涘捶?1024 闁?65535 濞戞柨顑夊Λ?; errorEl.style.display='block'; return;
   }
-  btn.disabled=true; btn.textContent='正在保存...';
+  btn.disabled=true; btn.textContent='婵繐绲藉﹢顏呯┍濠靛棛鎽?..';
   try {
     var r = await fetch('./api/update_settings', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -3097,16 +3092,16 @@ async function saveNetwork(e) {
     });
     var d = await r.json();
     if (r.ok&&d.ok) {
-      successEl.textContent='配置保存成功，已即时生效！';
+      successEl.textContent='闂佹澘绉堕悿鍡樼┍濠靛棛鎽犻柟瀛樺姇婵盯鏁嶇仦钘夊殥闁告娅曞鍌炴偨閻斿憡娅忛柨?;
       successEl.style.display='block';
       setTimeout(function(){ closeNetworkModal(); load(); }, 1500);
     } else {
-      errorEl.textContent=d.error||'保存失败';
-      errorEl.style.display='block'; btn.disabled=false; btn.textContent='保存修改';
+      errorEl.textContent=d.error||'濞ｅ洦绻傞悺銊﹀緞鏉堫偉袝';
+      errorEl.style.display='block'; btn.disabled=false; btn.textContent='濞ｅ洦绻傞悺銊︾┍椤旇姤鏆?;
     }
   } catch(err) {
-    errorEl.textContent='连接服务器失败'; errorEl.style.display='block';
-    btn.disabled=false; btn.textContent='保存修改';
+    errorEl.textContent='閺夆晝鍋炵敮鎾嫉瀹ュ懎顫ら柛锝冨妼閵囨垹鎷?; errorEl.style.display='block';
+    btn.disabled=false; btn.textContent='濞ｅ洦绻傞悺銊︾┍椤旇姤鏆?;
   }
 }
 
@@ -3126,12 +3121,12 @@ function selectOptionCard(group, value) {
 }
 
 // ===== VPS Modal =====
-function openVpsModal() { $('vpsModal').style.display='flex'; $('adminDropdown').style.display='none'; }
+function openVpsModal() { $('vpsModal').style.display='flex'; // (always visible) }
 function closeVpsModal() { $('vpsModal').style.display='none'; }
 
 // ===== Gateway Modal =====
 function openGatewayModal() {
-  $('adminDropdown').style.display='none';
+  // (always visible)
   $('gatewayModal').style.display='flex';
   loadGatewayStatus();
   if (gatewayPollInterval) clearInterval(gatewayPollInterval);
@@ -3153,19 +3148,19 @@ function renderGatewayServices(services) {
   if (!container) return;
   var html = '';
   services.forEach(function(s){
-    var statusText = s.status==='running'?'正在运行':'已停止';
+    var statusText = s.status==='running'?'婵繐绲藉﹢顏呮交閹邦垼鏀?:'鐎瑰憡褰冩禒鐘差潰?;
     var badgeClass = s.status==='running'?'badge badge-available':'badge badge-unavailable';
     var pulse = s.status==='running'?'<span class="badge-pulse"></span>':'';
     html += '<div class="gateway-card"><div class="gateway-card-top"><span class="gateway-name">'+esc(s.name)+'</span><span class="'+badgeClass+'">'+pulse+statusText+'</span></div>'+
       '<div class="gateway-details">'+esc(s.details||'-')+'</div>'+
-      (s.error?'<div class="gateway-error">&#9888;&#65039; 诊断原因: '+esc(s.error)+'</div>':'')+'</div>';
+      (s.error?'<div class="gateway-error">&#9888;&#65039; 閻犲洤锕ラ弻鍥储閻旈攱绀? '+esc(s.error)+'</div>':'')+'</div>';
   });
   container.innerHTML = html;
 }
 
 // ===== Logs Modal =====
 function openLogsModal() {
-  $('adminDropdown').style.display='none';
+  // (always visible)
   $('logsModal').style.display='flex';
   loadLogs();
   if (logsPollInterval) clearInterval(logsPollInterval);
@@ -3191,7 +3186,7 @@ function filterAndRenderLogs() {
   else if (filterVal==='vpn') filtered=rawLogsCache.filter(function(l){return l.module==='VPN';});
   else if (filterVal==='system') filtered=rawLogsCache.filter(function(l){return !['Proxy','VPN'].includes(l.module);});
   if (!filtered.length) {
-    term.innerHTML='<div style="color:var(--text-tertiary);text-align:center;margin-top:150px">暂无该类型日志。</div>';
+    term.innerHTML='<div style="color:var(--text-tertiary);text-align:center;margin-top:150px">闁哄棗鍊瑰Λ銈囨嫚閵壯嗩潶闁搞劌顑嗗Λ鈺勭疀濡炲皷鍋?/div>';
     return;
   }
   var linesHtml = filtered.map(function(l){
@@ -3209,14 +3204,14 @@ function filterAndRenderLogs() {
 function copyLogContent() {
   var term=$('logTerminalContainer'); if(!term)return;
   var text=term.innerText||term.textContent;
-  if(!text||text.includes('暂无')){alert('当前没有可供复制的日志。');return;}
-  navigator.clipboard.writeText(text).then(function(){alert('日志内容已成功复制到剪贴板！');})
-  .catch(function(){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('日志内容已复制到剪贴板！');});
+  if(!text||text.includes('闁哄棗鍊瑰Λ?)){alert('鐟滅増鎸告晶鐘测柦閳╁啯绠掗柛娆樺灟缁跺灚寰勫鍛厬闁汇劌瀚Λ鈺勭疀濡炲皷鍋?);return;}
+  navigator.clipboard.writeText(text).then(function(){alert('闁哄啨鍎辩换鏃堝礃閸涱収鍟囩€圭寮堕崹姘跺礉閻斿妲婚柛鎺曟硾閸╁矂宕滈鍥у灡闁哄灏呯槐?);})
+  .catch(function(){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('闁哄啨鍎辩换鏃堝礃閸涱収鍟囩€瑰憡褰冮ˇ鏌ュ礆鐠哄搫鐓傞柛鎿冧海閸掓盯寮堕崠锛勭＜');});
 }
 function exportLogContent() {
   var term=$('logTerminalContainer'); if(!term)return;
   var text=term.innerText||term.textContent;
-  if(!text||text.includes('暂无')){alert('当前没有可供导出的日志。');return;}
+  if(!text||text.includes('闁哄棗鍊瑰Λ?)){alert('鐟滅増鎸告晶鐘测柦閳╁啯绠掗柛娆樺灟缁剁數鈧數鍘ч崵顓㈡儍閸曨剚锛夐煫鍥ㄣ仠閳?);return;}
   var blob=new Blob([text],{type:'text/plain;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;
@@ -3261,7 +3256,7 @@ setTimeout(updateChannels, 2000);
 </body></html>"""
 
 def check_proxy_health() -> dict[str, Any]:
-    # 1. 检测代理服务端口是否在监听
+    # 1. 婵☆偀鍋撴繛鏉戭儎閸烆剟鎮堕崱妯荤疀闁告棑绱曢顒勫矗閿濆棙笑闁告熬绠戝﹢顏堟儎閹存繃鍎?
     is_ipv6 = ":" in LOCAL_PROXY_HOST
     af = socket.AF_INET6 if is_ipv6 else socket.AF_INET
     s = None
@@ -3283,10 +3278,10 @@ def check_proxy_health() -> dict[str, Any]:
                 raise e
     except Exception as e:
         diag = vpn_utils.diagnose_local_obstructions(LOCAL_PROXY_PORT, host=LOCAL_PROXY_HOST)
-        diag_msg = diag[1] if diag else f"端口 {LOCAL_PROXY_PORT} 连接失败，原因: {e}"
+        diag_msg = diag[1] if diag else f"缂佹棏鍨拌ぐ?{LOCAL_PROXY_PORT} 閺夆晝鍋炵敮瀛樺緞鏉堫偉袝闁挎稑鑻敮顐﹀炊? {e}"
         return {
             "ok": False,
-            "error": f"代理服务未运行 ({diag_msg})"
+            "error": f"濞寸媴绲块幃濠囧嫉瀹ュ懎顫ら柡鍫海缁诲秶鎮?({diag_msg})"
         }
     finally:
         if s is not None:
@@ -3295,15 +3290,15 @@ def check_proxy_health() -> dict[str, Any]:
             except Exception:
                 pass
 
-    # 2. 检测虚拟网卡 tun0 是否存在 (Linux 下)
+    # 2. 婵☆偀鍋撴繛鏉戭儓濞呭嫰骞忛悢铏圭Ч闁?tun0 闁哄嫷鍨伴幆浣衡偓娑櫭﹢?(Linux 濞?
     tun_path = Path("/sys/class/net/tun0")
     if sys.platform.startswith("linux") and not tun_path.exists():
         return {
             "ok": False,
-            "error": "[错误代码 3004] [ERR_ROUTE_DEV_NOT_FOUND] VPN 虚拟网卡 (tun0) 未启用，请确保当前已成功连接 VPN 节点"
+            "error": "[闂佹寧鐟ㄩ銈嗙閿濆洨鍨?3004] [ERR_ROUTE_DEV_NOT_FOUND] VPN 闁惧繑纰嶇€氭瑧绱旈幋婵嗗耿 (tun0) 闁哄牜浜滈幆搴ㄦ偨椤帞绀夐悹鍥棑閳ユɑ绌卞┑鍡欑Ъ闁告挸绉撮崙锟犲箣閹邦剙顫犻弶鈺冨仦鐢?VPN 闁煎搫鍊婚崑?
         }
 
-    # 3. 使用 curl 通过本地 SOCKS5 代理接口测试 IP 与实际延迟
+    # 3. 濞达綀娉曢弫?curl 闂侇偅淇虹换鍐嫉椤掆偓濠€?SOCKS5 濞寸媴绲块幃濠囧箳閵夈儱缍撴繛鏉戭儓閻?IP 濞戞挸楠搁悿鍕⒔閸涱厽顐介弶?
     def _curl_check_ip(url: str) -> dict[str, Any] | None:
         proxy_hosts = []
         if LOCAL_PROXY_HOST == "::":
@@ -3351,7 +3346,7 @@ def check_proxy_health() -> dict[str, Any]:
         if result:
             return result
             
-        # 此时外网测试失败，检测本地代理端口是否依然能连通。若仍能连通，直接抛出出口测试失败，不调用占用诊断
+        # 婵縿鍊栧鍌涘緞閺嶎偆绉规繛鏉戭儓閻︻垱寰勬潏顐バ曢柨娑樻湰椤ュ懎霉鐎ｎ偅鎷遍柛锕傤暒閸烆剟鎮堕崱娆樹紓闁告瑱绲惧Σ鎼佸触閿旇法璐╅柣鎺撳劶閸忔ɑ娼婚悙琛″亾濮樸儮鍋撻崒婵嗩仧濞寸姴绉烽崗妯绘交閻愯　鍋撳鍓х闁烩晛鐡ㄧ敮鎾箮濞戞ê姣夐柛鎴濇惈瑜版稑霉鐎ｎ厾妲稿鎯扮簿鐟欙箓鏁嶇仦鑲╃憹閻犲鍟伴弫銈夊础閻樺灚鏆忛悹鍥э攻閺?
         port_still_listening = False
         test_sock = None
         try:
@@ -3382,11 +3377,11 @@ def check_proxy_health() -> dict[str, Any]:
         if not port_still_listening:
             diag = vpn_utils.diagnose_local_obstructions(LOCAL_PROXY_PORT, host=LOCAL_PROXY_HOST)
             if diag:
-                return {"ok": False, "error": f"出口连接测试失败 | 本机诊断结果: {diag[1]}"}
+                return {"ok": False, "error": f"闁告垵鎼ぐ娑欐交閻愭潙澶嶆繛鏉戭儓閻︻垱寰勬潏顐バ?| 闁哄牜鍓氬┃鈧悹鍥э攻閺屽洨绱掗幘瀵镐函: {diag[1]}"}
             
-        return {"ok": False, "error": "出口连接测试失败 (ip.sb 和 api.ipify.org 均无法连通，可能是节点已失效或 VPS 防火墙限制了 UDP/TCP 出站端口)"}
+        return {"ok": False, "error": "闁告垵鎼ぐ娑欐交閻愭潙澶嶆繛鏉戭儓閻︻垱寰勬潏顐バ?(ip.sb 闁?api.ipify.org 闁秆冩处濡倕鈻旈弴锛勭闂侇偅鐔槐婵嬪矗椤栨繂鍘撮柡鍕靛灥婵☆參鎮欓悷鏉垮殥濠㈡儼椴搁弲銉╁箣?VPS 闂傚啳灏欐导鈧褎鐟╁娲礆閺堢數鍟?UDP/TCP 闁告垼娅ｉ悵顖滅博椤栨艾缍?"}
     except Exception as e:
-        return {"ok": False, "error": f"出口连接测试异常: {e}"}
+        return {"ok": False, "error": f"闁告垵鎼ぐ娑欐交閻愭潙澶嶆繛鏉戭儓閻︻垰顕ｉ崒姘卞煑: {e}"}
 
 def background_proxy_checker() -> None:
     global last_checker_heartbeat, is_connecting
@@ -3406,12 +3401,12 @@ def background_proxy_checker() -> None:
                     proxy_latency_ms=res["latency_ms"],
                     proxy_error=""
                 )
-                log_to_json("INFO", "Proxy", f"代理可用，IP: {res['ip']}, 延迟: {res['latency_ms']} ms")
+                log_to_json("INFO", "Proxy", f"濞寸媴绲块幃濠囧矗椤栨粍鏆忛柨娑樼摜P: {res['ip']}, 鐎点倖鍎肩换? {res['latency_ms']} ms")
             else:
-                error_msg = res.get("error", "未知错误")
+                error_msg = res.get("error", "闁哄牜浜為悡锟犳煥濞嗘帩鍤?)
                 if active_openvpn_node_id:
-                    print(f"[警告] {LOCAL_PROXY_PORT} 端口本地代理当前不可用！原因: {error_msg}", flush=True)
-                    log_to_json("WARNING", "Proxy", f"代理不可用: {error_msg}")
+                    print(f"[閻犫偓閿曗偓閹差摚 {LOCAL_PROXY_PORT} 缂佹棏鍨拌ぐ娑㈠嫉椤掆偓濠€瀛樼閿濆洦鍊炵憸鐗堟尭婢х姵绋夊鍛闁汇埄鐓夌槐鎺楀储閻旈攱绀? {error_msg}", flush=True)
+                    log_to_json("WARNING", "Proxy", f"濞寸媴绲块幃濠冪▔瀹ュ懎璁查柣? {error_msg}")
                 set_state(
                     proxy_ok=False,
                     proxy_ip="-",
@@ -3428,20 +3423,20 @@ def background_proxy_checker() -> None:
                             nodes = read_nodes()
                             active_node = next((n for n in nodes if n.get("id") == active_openvpn_node_id), None)
                             if active_node:
-                                mark_blacklisted(active_node, f"代理连通性检测失败: {error_msg}")
+                                mark_blacklisted(active_node, f"濞寸媴绲块幃濠冩交閻愯　鍋撳顓涘亾瑜庨ˉ鍛圭€ｎ亗浜奸悹? {error_msg}")
                                 active_node["probe_status"] = "unavailable"
                                 write_json(NODES_FILE, nodes)
                         auto_switch_node()
                     else:
-                        print(f"[代理守护线程] 固定 IP 模式下代理不可用，正在尝试重启连接同一节点: {active_openvpn_node_id}", flush=True)
+                        print(f"[濞寸媴绲块幃濠勨偓鐟扮墛婵垻鐥捄銊㈡煠] 闁搞儱鎼悾?IP 婵☆垪鈧磭纭€濞戞挸顑勯崬顒勬偠閸℃洜鐟濋柛娆樺灣閺併倝鏁嶇仦缁㈠妧闁革负鍔岄惃鍓ф嫚閺囥垹娅㈤柛姘煎灥缁绘盯骞掗妷銉﹀€卞☉鎾亾闁煎搫鍊婚崑? {active_openvpn_node_id}", flush=True)
                         is_connecting = False
                         try:
                             connect_node(active_openvpn_node_id)
                         except Exception as e:
-                            print(f"[代理守护线程] 重启固定节点失败: {e}", flush=True)
+                            print(f"[濞寸媴绲块幃濠勨偓鐟扮墛婵垻鐥捄銊㈡煠] 闂佹彃绉撮幆搴ㄥ炊閸濆嫮鏆伴柤鍝勫€婚崑锝嗗緞鏉堫偉袝: {e}", flush=True)
         except Exception as e:
-            print(f"[错误] 代理后台检测发生异常: {e}", flush=True)
-            log_to_json("ERROR", "Proxy", f"检测守护线程发生异常: {e}")
+            print(f"[闂佹寧鐟ㄩ顦?濞寸媴绲块幃濠囧触鎼粹€抽叡婵☆偀鍋撴繛鏉戭儏瑜板倿鎮介悢椋庣＝閻? {e}", flush=True)
+            log_to_json("ERROR", "Proxy", f"婵☆偀鍋撴繛鏉戭儏閻Ｑ囧箮閵堝洤娈犵紒瀣儏瑜板倿鎮介悢椋庣＝閻? {e}")
         time.sleep(30)
 
 def active_node_pinger() -> None:
@@ -3461,15 +3456,15 @@ def active_node_pinger() -> None:
                         if latency > 0:
                             set_state(active_node_latency=f"{latency} ms")
                         else:
-                            set_state(active_node_latency="检测超时")
+                            set_state(active_node_latency="婵☆偀鍋撴繛鏉戭儓缁夋挳寮?)
                     else:
-                        set_state(active_node_latency="检测超时")
+                        set_state(active_node_latency="婵☆偀鍋撴繛鏉戭儓缁夋挳寮?)
                 else:
-                    set_state(active_node_latency="检测超时")
+                    set_state(active_node_latency="婵☆偀鍋撴繛鏉戭儓缁夋挳寮?)
             elif is_connecting:
-                set_state(active_node_latency="测试中...")
+                set_state(active_node_latency="婵炴潙顑堥惁顖涚▔?..")
             else:
-                set_state(active_node_latency="无活动连接")
+                set_state(active_node_latency="闁哄啰濮靛鍧楀礉閵娿劎绠鹃柟?)
         except Exception as e:
             print(f"[ERROR] active_node_pinger error: {e}", flush=True)
         time.sleep(10)
@@ -3484,7 +3479,7 @@ class Handler(BaseHTTPRequestHandler):
         ui_cfg = load_ui_config()
         pwd = ui_cfg.get("password")
         if not pwd:
-            print("[Auth] 管理后台密码为空，已拒绝访问。请检查 ui_auth.json。", flush=True)
+            print("[Auth] 缂佺媴绱曢幃濠囧触鎼粹€抽叡閻庨潧妫涢悥婊勭▔閾忓厜鏁勯柨娑樿嫰閸戯繝骞忛幒鏃傚崪閻犱礁娼″Λ鍫曞Υ閸屾繍鍤炴俊顐熷亾闁?ui_auth.json闁?, flush=True)
             return False
         
         cookie_header = self.headers.get("Cookie", "")
@@ -3540,9 +3535,9 @@ class Handler(BaseHTTPRequestHandler):
     def read_request_body(self, max_bytes: int = 65536) -> bytes:
         length = parse_int(self.headers.get("Content-Length"))
         if length < 0:
-            raise ValueError("Content-Length 无效")
+            raise ValueError("Content-Length 闁哄啰濮甸弲?)
         if length > max_bytes:
-            raise ValueError(f"请求体过大，最大允许 {max_bytes} 字节")
+            raise ValueError(f"閻犲洭鏀遍惇鐗堟媴閹惧湱绠栧鍫嗗秶绀夐柡鍫氬亾濠㈠爢鍐ㄥ笒閻?{max_bytes} 閻庢稒顨夋俊?)
         return self.rfile.read(length) if length > 0 else b""
 
     def read_json_body(self, max_bytes: int = 65536) -> dict[str, Any]:
@@ -3551,7 +3546,7 @@ class Handler(BaseHTTPRequestHandler):
             return {}
         data = json.loads(body.decode("utf-8"))
         if not isinstance(data, dict):
-            raise ValueError("请求 JSON 必须是对象")
+            raise ValueError("閻犲洭鏀遍惇?JSON 闊洤鎳橀妴蹇涘及椤栨凹鍤犻悹?)
         return data
 
     def do_GET(self) -> None:
@@ -3614,9 +3609,9 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"error": "not found"}, HTTPStatus.NOT_FOUND)
         elif effective_path == "/api/gateway_status":
             web_ui_status = {
-                "name": "Web 管理服务",
+                "name": "Web 缂佺媴绱曢幃濠囧嫉瀹ュ懎顫?,
                 "status": "running",
-                "details": f"监听地址: {load_ui_config().get('host', UI_HOST)}:{load_ui_config().get('port', UI_PORT)}",
+                "details": f"闁烩晜鍨甸幆澶愬捶閺夋寧绲? {load_ui_config().get('host', UI_HOST)}:{load_ui_config().get('port', UI_PORT)}",
                 "error": ""
             }
             proxy_ok = False
@@ -3644,7 +3639,7 @@ class Handler(BaseHTTPRequestHandler):
                         raise
             except Exception as e:
                 diag = vpn_utils.diagnose_local_obstructions(LOCAL_PROXY_PORT, host=LOCAL_PROXY_HOST)
-                proxy_err = diag[1] if diag else f"本地代理网关无法连通: {e}"
+                proxy_err = diag[1] if diag else f"闁哄牜鍓欏﹢瀛樼閿濆洦鍊炵紓鍐╁灥閸櫻囧籍閻樺磭銆婇弶鈺冨仱閳? {e}"
             finally:
                 if s is not None:
                     try:
@@ -3652,25 +3647,25 @@ class Handler(BaseHTTPRequestHandler):
                     except Exception:
                         pass
             proxy_gateway_status = {
-                "name": "本地代理网关",
+                "name": "闁哄牜鍓欏﹢瀛樼閿濆洦鍊炵紓鍐╁灥閸?,
                 "status": "running" if proxy_ok else "stopped",
-                "details": f"监听地址: {LOCAL_PROXY_HOST}:{LOCAL_PROXY_PORT}",
+                "details": f"闁烩晜鍨甸幆澶愬捶閺夋寧绲? {LOCAL_PROXY_HOST}:{LOCAL_PROXY_PORT}",
                 "error": proxy_err
             }
             ovpn_ok = active_openvpn_running()
             ovpn_err = ""
-            ovpn_details = "未连接"
+            ovpn_details = "闁哄牜浜ｇ换娑㈠箳?
             if ovpn_ok:
-                ovpn_details = f"已连接节点: {active_openvpn_node_id}"
+                ovpn_details = f"鐎规瓕灏换娑㈠箳閵夈劌螡闁? {active_openvpn_node_id}"
                 if sys.platform.startswith("linux"):
                     if not Path("/sys/class/net/tun0").exists():
-                        ovpn_err = "[警告] 虚拟网卡 (tun0) 未启用，可能存在策略路由配置问题。"
+                        ovpn_err = "[閻犫偓閿曗偓閹差摚 闁惧繑纰嶇€氭瑧绱旈幋婵嗗耿 (tun0) 闁哄牜浜滈幆搴ㄦ偨椤帞绀夐柛娆樺灥閸忔鈧稒锚濠€顏嗙驳閺嶎偅娈ｉ悹渚灣閺侀亶鏌婂鍥╂瀭闂傚偆鍣ｉ。浠嬪Υ?
             else:
                 if active_openvpn_node_id:
-                    ovpn_err = "连接已中断或 OpenVPN 核心程序异常退出。"
-                    ovpn_details = f"尝试连接节点 {active_openvpn_node_id} 失败"
+                    ovpn_err = "閺夆晝鍋炵敮鏉戭啅闊叀鍘柡鍌ゅ幗閸?OpenVPN 闁哄秶顭堢缓鍓х矙鐎ｎ亞纰嶇€殿喖鍊搁悥鍫曟焻閳ь剟宕欓幁鎺嗗亾?
+                    ovpn_details = f"閻忓繑绻嗛惁顖涙交閻愭潙澶嶉柤鍝勫€婚崑?{active_openvpn_node_id} 濠㈡儼绮剧憴?
             openvpn_status = {
-                "name": "OpenVPN 核心连接",
+                "name": "OpenVPN 闁哄秶顭堢缓鐐交閻愭潙澶?,
                 "status": "running" if ovpn_ok else "stopped",
                 "details": ovpn_details,
                 "error": ovpn_err
@@ -3679,24 +3674,24 @@ class Handler(BaseHTTPRequestHandler):
             server_uptime = now - server_start_time
             collector_ok = (last_collector_heartbeat > 0.0 and now - last_collector_heartbeat < (CHECK_INTERVAL_SECONDS * 1.5)) or (server_uptime < 15.0)
             collector_status = {
-                "name": "节点同步守护线程",
+                "name": "闁煎搫鍊婚崑锝夊触鐏炵虎鍔勯悗鐟扮墛婵垻鐥捄銊㈡煠",
                 "status": "running" if collector_ok else "stopped",
-                "details": f"上次心跳: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_collector_heartbeat)) if last_collector_heartbeat > 0 else '等待启动'}",
-                "error": "" if collector_ok else "线程可能已异常终止，导致无法在后台拉取和测速新节点。"
+                "details": f"濞戞挸锕ラ鑹扮疀閸愵厾鍎? {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_collector_heartbeat)) if last_collector_heartbeat > 0 else '缂佹稑顦欢鐔煎触椤栨艾袟'}",
+                "error": "" if collector_ok else "缂佹崘娉曢埢濂稿矗椤栨繂鍘寸€瑰憡褰冪槐鎾舵暜閸濄儳鐭掓慨婵愭緛缁辨繄鈧絻澹堥崵褔寮悩宕囥€婇柛锔哄妼閹宕ｉ悧鍫濐€欓柛娆愮墪閹锋澘霉鐎ｎ喒鍋撻悢鍛婄厐闁煎搫鍊婚崑锝夊Υ?
             }
             checker_ok = (last_checker_heartbeat > 0.0 and now - last_checker_heartbeat < 90.0) or (server_uptime < 35.0)
             checker_status = {
-                "name": "出口检测守护线程",
+                "name": "闁告垵鎼ぐ娑樜涢埀顒€霉鐎ｎ亞鏆撻柟韬插€楅崵搴ｇ矙?,
                 "status": "running" if checker_ok else "stopped",
-                "details": f"上次心跳: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_checker_heartbeat)) if last_checker_heartbeat > 0 else '等待启动'}",
-                "error": "" if checker_ok else "线程可能已挂起或终止，导致无法实时获取代理出口状态。"
+                "details": f"濞戞挸锕ラ鑹扮疀閸愵厾鍎? {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_checker_heartbeat)) if last_checker_heartbeat > 0 else '缂佹稑顦欢鐔煎触椤栨艾袟'}",
+                "error": "" if checker_ok else "缂佹崘娉曢埢濂稿矗椤栨繂鍘寸€圭寮剁€垫洜鎸ч柨瀣仐缂備礁鐗婇娑㈡晬鐏炵瓔鍤ら柤宄扮摠濡倕鈻旈弴鐐垫澖闁哄啯鍎奸獮蹇涘矗閺嶏箑鏁╅柣鐐叉閸ゎ參宕ｉ敐鍥﹂柟顑块檷閳?
             }
             pinger_ok = (last_pinger_heartbeat > 0.0 and now - last_pinger_heartbeat < 30.0) or (server_uptime < 15.0)
             pinger_status = {
-                "name": "延迟测速守护线程",
+                "name": "鐎点倖鍎肩换婊兠圭€ｎ喒鍋撻悢椋庢殦闁硅翰鍊楅崵搴ｇ矙?,
                 "status": "running" if pinger_ok else "stopped",
-                "details": f"上次心跳: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_pinger_heartbeat)) if last_pinger_heartbeat > 0 else '等待启动'}",
-                "error": "" if pinger_ok else "线程可能已中止，无法实时刷新活动节点的 Ping 延迟。"
+                "details": f"濞戞挸锕ラ鑹扮疀閸愵厾鍎? {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_pinger_heartbeat)) if last_pinger_heartbeat > 0 else '缂佹稑顦欢鐔煎触椤栨艾袟'}",
+                "error": "" if pinger_ok else "缂佹崘娉曢埢濂稿矗椤栨繂鍘寸€规瓕寮撻懙鎴濐潰椤喚绀夐柡鍐У绾墎鈧湱鍋炲鍌炲礆闁垮鐓€婵炶尪顕ф慨鈺呮嚍閸屾粌浠柣?Ping 鐎点倖鍎肩换婊堝Υ?
             }
             self.send_json({
                 "ok": True,
@@ -3760,7 +3755,7 @@ class Handler(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(body)
                 else:
-                    self.send_json({"ok": False, "error": "用户名或密码不正确，请重新输入"}, HTTPStatus.FORBIDDEN)
+                    self.send_json({"ok": False, "error": "闁活潿鍔嶉崺娑㈠触瀹ュ棗鐏楅悗闈涙閻栨粍绋夊鍡╁妧缁绢収鍣槐婵堟嫚閻戣棄娅㈤柡鍌涘缁额參宕?}, HTTPStatus.FORBIDDEN)
             except Exception as exc:
                 self.send_json({"ok": False, "error": str(exc)}, HTTPStatus.INTERNAL_SERVER_ERROR)
             return
@@ -3811,7 +3806,7 @@ class Handler(BaseHTTPRequestHandler):
                 
                 ui_cfg = load_ui_config()
                 if not new_username or (not new_password and not ui_cfg.get("password")):
-                    self.send_json({"ok": False, "error": "用户名不能为空；首次设置时密码不能为空"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "闁活潿鍔嶉崺娑㈠触瀹ュ嫮鐟濋柤铏灊鐠愮喓绮氶悮瀵稿耿濡絾鐗楅鑲╂媼閸撗呮瀭闁哄啳娉涢惁鎴︽儘娴ｉ鐟濋柤铏灊鐠愮喓绮?}, HTTPStatus.BAD_REQUEST)
                     return
                 
                 try:
@@ -3819,11 +3814,11 @@ class Handler(BaseHTTPRequestHandler):
                     if not (1 <= new_port_int <= 65535):
                         raise ValueError()
                 except (TypeError, ValueError):
-                    self.send_json({"ok": False, "error": "网页管理端口范围必须是 1 至 65535"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "缂傚啯鍨块妴澶岀不閿涘嫭鍊炵紒鏃戝灠瑜版盯鎳犻崘銊︾函闊洤鎳橀妴蹇涘及?1 闁?65535"}, HTTPStatus.BAD_REQUEST)
                     return
 
                 if not new_suffix or not re.match(r"^[A-Za-z0-9]+$", new_suffix):
-                    self.send_json({"ok": False, "error": "安全后缀仅能由英文字母和数字组成"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "閻庣懓顦崣蹇涘触鎼达絿纾诲ù鐘叉嚀閸忔﹢鎮芥潏顐㈩伆闁哄倸娲ら悺褍袙瀹ュ懏瀚查柡浣规緲閻⊙呯磼閸曨剙鐏?}, HTTPStatus.BAD_REQUEST)
                     return
 
                 expected_username = ui_cfg.get("username", "")
@@ -3855,16 +3850,16 @@ class Handler(BaseHTTPRequestHandler):
                 
                 restart_needed = (new_port_int != expected_port or new_suffix != expected_suffix or new_domain != expected_domain or new_https != expected_https or new_cert_path != expected_cert_path or new_key_path != expected_key_path)
                 if restart_needed:
-                    self.send_json({"ok": True, "restart_needed": True, "reauth_required": reauth_required, "message": "配置更新成功，网页管理端口或路径已变更，将在 2 秒内重启..."})
+                    self.send_json({"ok": True, "restart_needed": True, "reauth_required": reauth_required, "message": "闂佹澘绉堕悿鍡涘即鐎涙ɑ鐓€闁瑰瓨鍔曟慨娑㈡晬瀹€鈧紞澶嬨亜閻㈡鍚€闁荤偛妫涢顒勫矗閿濆棗鐏楅悹渚灠缁剁偛顔忛幓鎺戠秮闁哄洩鎻槐婵堜焊閸℃韬?2 缂佸甯掗崬鎾煂瀹ュ懏鍎?.."})
                     
                     def restart_server():
                         time.sleep(2)
-                        print("[系统] 管理后台安全配置更新，进程即将退出以触发自动重启...", flush=True)
+                        print("[缂侇垵宕电划绡?缂佺媴绱曢幃濠囧触鎼粹€抽叡閻庣懓顦崣蹇涙煀瀹ュ洨鏋傞柡鍥х摠閺屽﹪鏁嶅畝鍐缂佸顑呭畵鍡欎焊閸℃稈鍋撻埀顒勫礄鏉為绨伴悷娆欑畱瑜板倿鎳涢鍕楅梺鎻掔Т閹?..", flush=True)
                         os._exit(0)
                     
                     threading.Thread(target=restart_server, daemon=True).start()
                 else:
-                    self.send_json({"ok": True, "restart_needed": False, "reauth_required": reauth_required, "message": "账号密码配置更新成功，已即时生效！"})
+                    self.send_json({"ok": True, "restart_needed": False, "reauth_required": reauth_required, "message": "閻犳劧绠戣ぐ璺ㄢ偓闈涙閻栨粓鏌婂鍥╂瀭闁哄洤鐡ㄩ弻濠囧箣閹邦剙顫犻柨娑樿嫰閸戯繝宕￠搹顐ｎ槯闁汇垻鍠愰弲銉╂晬?})
             except Exception as exc:
                 self.send_json({"ok": False, "error": str(exc)}, HTTPStatus.INTERNAL_SERVER_ERROR)
             return
@@ -3883,21 +3878,21 @@ class Handler(BaseHTTPRequestHandler):
                     if not (1024 <= new_proxy_port_int <= 65535):
                         raise ValueError()
                 except (TypeError, ValueError):
-                    self.send_json({"ok": False, "error": "代理出站端口范围必须是 1024 至 65535"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "濞寸媴绲块幃濠囧礄閾忓湱褰茬紒鏃戝灠瑜版盯鎳犻崘銊︾函闊洤鎳橀妴蹇涘及?1024 闁?65535"}, HTTPStatus.BAD_REQUEST)
                     return
                 
                 if routing_mode not in ("auto", "fixed_ip", "fixed_region", "favorites"):
-                    self.send_json({"ok": False, "error": "无效的路由配置模式"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "闁哄啰濮甸弲銉╂儍閸曨喚鐔呴柣銏や憾閸樸倗绱旈渚ヤ礁顕?}, HTTPStatus.BAD_REQUEST)
                     return
                 if routing_ip_type not in ("all", "residential", "hosting"):
-                    self.send_json({"ok": False, "error": "无效的IP出站类型过滤"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "闁哄啰濮甸弲銉╂儍閸戭毝闁告垼娅ｉ悵顖滅尵鐠囪尙鈧攱娼婚崶銊﹀Б"}, HTTPStatus.BAD_REQUEST)
                     return
                 
                 ui_cfg = load_ui_config()
                 expected_proxy_port = ui_cfg.get("proxy_port", 7928)
                 
                 if new_proxy_port_int == ui_cfg.get("port", 8787):
-                    self.send_json({"ok": False, "error": "代理出站端口不能与网页管理端口相同"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "濞寸媴绲块幃濠囧礄閾忓湱褰茬紒鏃戝灠瑜版稒绋夊鍫濆幋濞戞挸娴风紞澶嬨亜閻㈡鍚€闁荤偛妫涢顒勫矗閿濆洦绁查柛?}, HTTPStatus.BAD_REQUEST)
                     return
                 
                 ui_cfg["proxy_port"] = new_proxy_port_int
@@ -3912,16 +3907,16 @@ class Handler(BaseHTTPRequestHandler):
                 
                 restart_needed = (new_proxy_port_int != expected_proxy_port)
                 if restart_needed:
-                    self.send_json({"ok": True, "restart_needed": True, "message": "配置更新成功，代理出站端口变更，将在 2 秒内重启..."})
+                    self.send_json({"ok": True, "restart_needed": True, "message": "闂佹澘绉堕悿鍡涘即鐎涙ɑ鐓€闁瑰瓨鍔曟慨娑㈡晬鐏炵厧鏁╅柣鐐叉閸ゎ厾绮╁▎鎴紓闁告瑱绲借ぐ澶愬即鏉堝墽绀夐悘蹇撴濠€?2 缂佸甯掗崬鎾煂瀹ュ懏鍎?.."})
                     
                     def restart_server():
                         time.sleep(2)
-                        print("[系统] 代理出站端口变更，进程即将退出以触发自动重启...", flush=True)
+                        print("[缂侇垵宕电划绡?濞寸媴绲块幃濠囧礄閾忓湱褰茬紒鏃戝灠瑜版盯宕ｅΟ缁樼函闁挎稑鐭佺换妯肩矙鐎ｎ亜绁悘蹇撴閳ь兘鍋撻柛鎴ｆ〃娴滄帞鎲撮敃鈧ぐ鍌炴嚊椤忓嫬袟闂佹彃绉撮幆?..", flush=True)
                         os._exit(0)
                     
                     threading.Thread(target=restart_server, daemon=True).start()
                 else:
-                    self.send_json({"ok": True, "restart_needed": False, "message": "配置更新成功，已即时生效！"})
+                    self.send_json({"ok": True, "restart_needed": False, "message": "闂佹澘绉堕悿鍡涘即鐎涙ɑ鐓€闁瑰瓨鍔曟慨娑㈡晬鐏炶棄鍤掗柛妤勬珪濡炲倿鎮介悢鍛婃珡闁?})
             except Exception as exc:
                 self.send_json({"ok": False, "error": str(exc)}, HTTPStatus.INTERNAL_SERVER_ERROR)
             return
@@ -3935,10 +3930,10 @@ class Handler(BaseHTTPRequestHandler):
                 fav_fail_fallback = bool(payload.get("fav_fail_fallback", True))
                 
                 if routing_mode not in ("auto", "fixed_ip", "fixed_region", "favorites"):
-                    self.send_json({"ok": False, "error": "无效的路由配置模式"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "闁哄啰濮甸弲銉╂儍閸曨喚鐔呴柣銏や憾閸樸倗绱旈渚ヤ礁顕?}, HTTPStatus.BAD_REQUEST)
                     return
                 if routing_ip_type not in ("all", "residential", "hosting"):
-                    self.send_json({"ok": False, "error": "无效的IP出站类型过滤"}, HTTPStatus.BAD_REQUEST)
+                    self.send_json({"ok": False, "error": "闁哄啰濮甸弲銉╂儍閸戭毝闁告垼娅ｉ悵顖滅尵鐠囪尙鈧攱娼婚崶銊﹀Б"}, HTTPStatus.BAD_REQUEST)
                     return
                 
                 ui_cfg = load_ui_config()
@@ -3953,7 +3948,7 @@ class Handler(BaseHTTPRequestHandler):
                     DATA_DIR.mkdir(exist_ok=True, parents=True)
                     auth_file.write_text(json.dumps(ui_cfg, ensure_ascii=False, indent=2), encoding="utf-8")
                 
-                self.send_json({"ok": True, "message": "出站路由配置更新成功，已即时生效！"})
+                self.send_json({"ok": True, "message": "闁告垼娅ｉ悵顖滄崉椤栨粍鏆犻梺鏉跨Ф閻ゅ棝寮寸€涙ɑ鐓€闁瑰瓨鍔曟慨娑㈡晬鐏炶棄鍤掗柛妤勬珪濡炲倿鎮介悢鍛婃珡闁?})
             except Exception as exc:
                 self.send_json({"ok": False, "error": str(exc)}, HTTPStatus.INTERNAL_SERVER_ERROR)
             return
@@ -3992,10 +3987,10 @@ class Handler(BaseHTTPRequestHandler):
         elif effective_path == "/api/refresh_nodes":
             try:
                 if maintenance_lock.locked():
-                    self.send_json({"ok": True, "message": "节点维护任务正在运行，请稍后再试", "running": True})
+                    self.send_json({"ok": True, "message": "闁煎搫鍊婚崑锝囩磼鐎涙ê袘濞寸姾顕ф慨鐔奉潰閿濆懏韬弶鈺傚姌椤㈡垿鏁嶅畝鍐惧殲缂佸绉撮幃妤呭礃瀹ュ牏妲?, "running": True})
                 else:
                     threading.Thread(target=maintain_valid_nodes, args=(False,), daemon=True).start()
-                    self.send_json({"ok": True, "message": "已在后台启动节点更新流程", "running": False})
+                    self.send_json({"ok": True, "message": "鐎瑰憡褰冨﹢顏堝触鎼粹€抽叡闁告凹鍨版慨鈺呮嚍閸屾粌浠柡鍥х摠閺屽﹤霉娴ｈ　鏌?, "running": False})
             except Exception as exc:
                 self.send_json({"ok": False, "error": str(exc)}, HTTPStatus.INTERNAL_SERVER_ERROR)
         elif effective_path == "/api/test_nodes":
@@ -4033,7 +4028,7 @@ class Handler(BaseHTTPRequestHandler):
                 global last_active_ping_time, last_active_latency
                 last_active_ping_time = 0.0
                 last_active_latency = 0
-                set_state(active_openvpn_node_id="", last_check_message="手动断开连接", active_node_latency="无活动连接")
+                set_state(active_openvpn_node_id="", last_check_message="闁归潧顑呮慨鈺呭棘椤撶偟纾婚弶鈺冨仦鐢?, active_node_latency="闁哄啰濮靛鍧楀礉閵娿劎绠鹃柟?)
                 self.send_json({"ok": True})
             except Exception as exc:
                 self.send_json({"ok": False, "error": str(exc)}, HTTPStatus.INTERNAL_SERVER_ERROR)
@@ -4073,7 +4068,7 @@ class Handler(BaseHTTPRequestHandler):
                         proxy_ok=False,
                         proxy_ip="-",
                         proxy_latency_ms=0,
-                        proxy_error=result.get("error", "未知错误")
+                        proxy_error=result.get("error", "闁哄牜浜為悡锟犳煥濞嗘帩鍤?)
                     )
                 self.send_json(result)
             except Exception as exc:
@@ -4121,9 +4116,9 @@ def main() -> None:
             "local_proxy": f"http://{'[' + LOCAL_PROXY_HOST + ']' if ':' in LOCAL_PROXY_HOST else LOCAL_PROXY_HOST}:{LOCAL_PROXY_PORT}",
             "active_openvpn_node_id": "",
             "last_fetch_status": "starting",
-            "last_check_message": "服务已启动，正在初始化网络并获取候选 VPN 节点...",
+            "last_check_message": "闁哄牆绉存慨鐔奉啅閹绘帗鍎欓柛鏃戠厜缁辨繂顫㈤敐鍛含闁告帗绻傞～鎰板礌閺嶎偆绉圭紓浣圭矊閼荤喖鎳㈠畡鏉跨悼闁稿﹥鐟╅埀?VPN 闁煎搫鍊婚崑?..",
             "is_connecting": True,
-            "active_node_latency": "正在准备",
+            "active_node_latency": "婵繐绲藉﹢顏堝礄閸℃妲?,
             "blacklisted_nodes": 0,
         },
     )
@@ -4131,7 +4126,7 @@ def main() -> None:
         threading.Thread(target=proxy_server.start_proxy_server, args=('127.0.0.1', CHANNEL_BASE_PORT + chi), daemon=True).start()
     
     # Wait for the gateway to officially start
-    print("[网关] 正在启动代理网关...", flush=True)
+    print("[缂傚啯鍨甸崣顪?婵繐绲藉﹢顏堝触椤栨艾袟濞寸媴绲块幃濠勭磾閹存繂褰?..", flush=True)
     gateway_ready = False
     is_ipv6 = ":" in LOCAL_PROXY_HOST
     af = socket.AF_INET6 if is_ipv6 else socket.AF_INET
@@ -4169,9 +4164,9 @@ def main() -> None:
                     pass
             
     if gateway_ready:
-        print("[网关] 代理网关已成功启动监听，启动同步与检测脚本...", flush=True)
+        print("[缂傚啯鍨甸崣顪?濞寸媴绲块幃濠勭磾閹存繂褰犵€圭寮堕崹姘跺礉閻旈攱鍎欓柛鏂诲妿濞插啴宕ラ濠勭闁告凹鍨版慨鈺呭触鐏炵虎鍔勫☉鎾冲椤ュ懎霉鐎ｎ厼澹栭柡?..", flush=True)
     else:
-        print("[警告] 代理网关启动超时，继续执行脚本...", flush=True)
+        print("[閻犫偓閿曗偓閹差摚 濞寸媴绲块幃濠勭磾閹存繂褰犻柛姘煎灠婵晝鎼鹃崨顔筋槯闁挎稑鐬奸幋椋庣磼椤撶喎鈷旈悶娑樼焷閸撳ジ寮?..", flush=True)
 
     threading.Thread(target=collector_loop, daemon=True).start()
     threading.Thread(target=background_proxy_checker, daemon=True).start()
