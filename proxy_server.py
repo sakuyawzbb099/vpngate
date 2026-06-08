@@ -236,7 +236,7 @@ def relay(left: socket.socket, right: socket.socket) -> None:
                 return
             target.sendall(data)
 
-def socks5_client(client: socket.socket, first_byte: bytes) -> None:
+def socks5_client(client: socket.socket, first_byte: bytes, server_port: int = 0) -> None:
     upstream = None
     try:
         methods_count = recv_exact(client, 1)[0]
@@ -273,7 +273,7 @@ def socks5_client(client: socket.socket, first_byte: bytes) -> None:
             return
         port = int.from_bytes(recv_exact(client, 2), "big")
         try:
-            upstream = create_connection((host, port), timeout=20, tun_name=channel_tun_map.get(self.server.server_address[1], "tun0"))
+            upstream = create_connection((host, port), timeout=20, tun_name=channel_tun_map.get(server_port, "tun0"))
         except Exception as e:
             print(f"[SOCKS5 代理失败] 目标 {host}:{port} 连接失败: {e}", flush=True)
             try:
@@ -297,7 +297,7 @@ def read_http_header(client: socket.socket, first_byte: bytes) -> bytes:
         data += chunk
     return data
 
-def http_client(client: socket.socket, first_byte: bytes) -> None:
+def http_client(client: socket.socket, first_byte: bytes, server_port: int = 0) -> None:
     upstream = None
     try:
         header = read_http_header(client, first_byte)
@@ -325,7 +325,7 @@ def http_client(client: socket.socket, first_byte: bytes) -> None:
                 return
         if method.upper() == "CONNECT":
             host, port = parse_host_port(target, 443)
-            upstream = create_connection((host, port), timeout=20, tun_name=channel_tun_map.get(self.server.server_address[1], "tun0"))
+            upstream = create_connection((host, port), timeout=20, tun_name=channel_tun_map.get(server_port, "tun0"))
             client.sendall(b"HTTP/1.1 200 Connection Established\r\n\r\n")
             if rest:
                 upstream.sendall(rest)
@@ -364,7 +364,7 @@ def http_client(client: socket.socket, first_byte: bytes) -> None:
         path = urllib.parse.urlunsplit(("", "", parsed.path or "/", parsed.query, ""))
         headers = [line for line in lines[1:] if not line.lower().startswith(("proxy-connection:", "connection:", "proxy-authorization:"))]
         request = f"{method} {path} {version}\r\n" + "\r\n".join(headers) + "\r\nConnection: close\r\n\r\n"
-        upstream = create_connection((hostname, port), timeout=20, tun_name=channel_tun_map.get(self.server.server_address[1], "tun0"))
+        upstream = create_connection((hostname, port), timeout=20, tun_name=channel_tun_map.get(server_port, "tun0"))
         upstream.sendall(request.encode("iso-8859-1") + rest)
         relay(client, upstream)
     except Exception as e:
@@ -378,14 +378,14 @@ def http_client(client: socket.socket, first_byte: bytes) -> None:
         if upstream:
             upstream.close()
 
-def proxy_client(client: socket.socket, address: tuple[str, int]) -> None:
+def proxy_client(client: socket.socket, address: tuple[str, int], server_port: int = 0) -> None:
     try:
         client.settimeout(30)
         first = recv_exact(client, 1)
         if first == b"\x05":
-            socks5_client(client, first)
+            socks5_client(client, first, server_port)
         else:
-            http_client(client, first)
+            http_client(client, first, server_port)
     except Exception as e:
         err_msg = str(e)
         if "[错误代码" in err_msg:
@@ -464,7 +464,7 @@ def start_proxy_server(host: str, port: int) -> None:
 
             def run_client() -> None:
                 try:
-                    proxy_client(client, address)
+                    proxy_client(client, address, port)
                 finally:
                     proxy_connection_sem.release()
 
