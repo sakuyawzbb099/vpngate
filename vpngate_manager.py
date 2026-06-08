@@ -1547,7 +1547,6 @@ def connect_channel(channel_idx: int, node_id: str) -> str:
                 ch_tun_ids[channel_idx] = -1
             raise RuntimeError(msg)
         ch_processes[channel_idx] = proc
-        proxy_server.channel_tun_map[CHANNEL_BASE_PORT + channel_idx] = f"tun{tun_idx}"
         setup_policy_routing(f"tun{tun_idx}", tun_idx, channel_idx)
         return msg
     finally:
@@ -1567,7 +1566,6 @@ def disconnect_channel(channel_idx: int) -> str:
             if ch_tun_ids[channel_idx] >= 0:
                 free_channel_tun(ch_tun_ids[channel_idx])
                 ch_tun_ids[channel_idx] = -1
-        proxy_server.channel_tun_map.pop(CHANNEL_BASE_PORT + channel_idx, None)
         if tun_idx >= 0:
             cleanup_policy_routing(tun_idx, channel_idx)
     return "disconnected"
