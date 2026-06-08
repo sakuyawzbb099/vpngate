@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 from __future__ import annotations
 
 import base64
@@ -1697,9 +1697,8 @@ def maintain_valid_nodes(force: bool = False) -> str:
                             if ch_processes[chi] is not None and ch_processes[chi].poll() is None:
                                 has_active_id = False
                                 break
-                    if not has_active_id: continue
-                    stop_active_openvpn()
                     if has_active_id:
+                        stop_active_openvpn()
                         print("[维护线程] 检测到当前 OpenVPN 进程已意外退出，准备自动切换节点", flush=True)
                         is_connecting = False
                         auto_switch_node()
