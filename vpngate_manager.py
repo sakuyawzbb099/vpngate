@@ -3525,7 +3525,7 @@ class Handler(BaseHTTPRequestHandler):
                     del stripped["config_text"]
                 stripped_nodes.append(stripped)
             ch_status = [{"index":i,"node_id":ch_node_ids[i],"online":ch_processes[i] is not None and ch_processes[i].poll() is None,"connecting":ch_connecting[i],"port":CHANNEL_BASE_PORT+i} for i in range(MAX_CHANNELS)]
-        self.send_json({"nodes": stripped_nodes, "state": get_state(), "channels": ch_status})
+            self.send_json({"nodes": stripped_nodes, "state": get_state(), "channels": ch_status})
         elif effective_path.startswith("/configs/"):
             filename = urllib.parse.unquote(effective_path.removeprefix("/configs/"))
             with lock:
@@ -4051,7 +4051,7 @@ def main() -> None:
         },
     )
     for chi in range(MAX_CHANNELS):
-    threading.Thread(target=proxy_server.start_proxy_server, args=('127.0.0.1', CHANNEL_BASE_PORT + chi), daemon=True).start()
+        threading.Thread(target=proxy_server.start_proxy_server, args=('127.0.0.1', CHANNEL_BASE_PORT + chi), daemon=True).start()
     
     # Wait for the gateway to officially start
     print("[网关] 正在启动代理网关...", flush=True)
