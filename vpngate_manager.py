@@ -2200,15 +2200,15 @@ display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:
 .status-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);font-weight:500}
 .status-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-emerald);box-shadow:0 0 8px rgba(16,185,129,0.5);display:inline-block}
 .header-actions{display:flex;align-items:center;gap:8px}
-.header-actions button,.header-actions .btn-telegram{
+.header-actions button{
 height:34px;border-radius:var(--radius-sm);padding:0 14px;font-weight:600;font-size:12px;
 cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);
 display:inline-flex;align-items:center;justify-content:center;gap:6px;
 background:var(--bg-glass);border:1px solid var(--border-default);color:var(--text-primary);white-space:nowrap;text-decoration:none;font-family:inherit
 }
-.header-actions button:hover,.header-actions .btn-telegram:hover{background:rgba(255,255,255,0.06);border-color:var(--border-strong)}
-.btn-telegram{background:rgba(43,162,223,0.1)!important;border-color:rgba(43,162,223,0.25)!important;color:#60b0e0!important}
-.btn-telegram:hover{background:rgba(43,162,223,0.2)!important;border-color:rgba(43,162,223,0.4)!important}
+
+
+
 
 /* ===== Channel Section ===== */
 .channel-section{padding:20px 32px 0;max-width:1400px;margin:0 auto}
@@ -2304,7 +2304,7 @@ tbody tr:hover td{background:rgba(255,255,255,0.02)}
 .badge-pending{background:rgba(245,158,11,0.08);color:var(--accent-gold-light);border-color:rgba(245,158,11,0.15)}
 .badge-current{background:rgba(6,182,212,0.08);color:var(--accent-cyan-light);border-color:rgba(6,182,212,0.15)}
 .badge-pulse{width:5px;height:5px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite;display:inline-block}
-@keyframes pulse{0%,100%{transform:scale(0.9);opacity:1}50%{transform:scale(1.8);opacity:0.3}}
+@keyframes pulse{0%,100%{transform:scale(0.9);opacity:1}50%{transform:scale(1.8);opacity:0.3}
 
 /* ===== Latency ===== */
 .latency-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;padding:2px 8px;border-radius:4px}
@@ -2330,7 +2330,7 @@ button:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;box-shad
 /* ===== Modals ===== */
 .modal{display:none;position:fixed;z-index:10000;inset:0;background:rgba(9,12,20,0.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px}
 .modal-content{background:rgba(16,21,40,0.92);border:1px solid var(--border-default);border-radius:var(--radius-xl);width:100%;max-width:500px;padding:32px;box-shadow:var(--shadow-elevated);position:relative;animation:modalFadeIn 0.25s cubic-bezier(0.4,0,0.2,1);max-height:85vh;overflow-y:auto}
-@keyframes modalFadeIn{from{transform:scale(0.95) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+@keyframes modalFadeIn{from{transform:scale(0.95) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}
 .modal-title{font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:24px;display:flex;align-items:center;gap:10px}
 .modal-close{position:absolute;top:16px;right:20px;font-size:20px;color:var(--text-tertiary);cursor:pointer;background:none;border:none;font-family:inherit;transition:color 0.2s;padding:4px;line-height:1}
 .modal-close:hover{color:var(--text-primary)}
@@ -2344,7 +2344,7 @@ button:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;box-shad
 .btn-secondary{height:40px;border-radius:var(--radius-sm);padding:0 20px;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s ease;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--bg-glass);border:1px solid var(--border-default);color:var(--text-primary)}
 .btn-secondary:hover{background:rgba(255,255,255,0.06);border-color:var(--border-strong)}
 .option-group{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-@media(max-width:480px){.option-group{grid-template-columns:1fr}}
+@media(max-width:480px){.option-group{grid-template-columns:1fr}
 .option-card{background:rgba(255,255,255,0.02);border:1px solid var(--border-default);border-radius:var(--radius-sm);padding:12px;cursor:pointer;transition:all 0.2s ease;user-select:none;text-align:left}
 .option-card:hover{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.12)}
 .option-card.active{background:rgba(245,158,11,0.06);border-color:var(--accent-gold);box-shadow:0 0 12px var(--glow-gold)}
@@ -2389,13 +2389,13 @@ button:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;box-shad
 #channelPanel{display:none}
 
 /* ===== Responsive ===== */
-@media(max-width:1200px){.channel-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:992px){.channel-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1200px){.channel-grid{grid-template-columns:repeat(3,1fr)}
+@media(max-width:992px){.channel-grid{grid-template-columns:repeat(3,1fr)}
 @media(max-width:768px){
 header{padding:10px 16px;flex-wrap:wrap}.channel-section{padding:16px 16px 0}main{padding:0 16px 32px}
 .channel-grid{grid-template-columns:repeat(2,1fr)}.toolbar{flex-direction:column}.toolbar-actions{margin-left:0;width:100%}.toolbar-actions .btn-primary{flex:1}
 }
-@media(max-width:480px){.channel-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.channel-grid{grid-template-columns:1fr}
 </style>
 </head>
 <body>
@@ -2413,10 +2413,7 @@ header{padding:10px 16px;flex-wrap:wrap}.channel-section{padding:16px 16px 0}mai
 <span class="status-badge" id="systemStatus"><span class="dot"></span>缂侇垵宕电划鐑樻交閹邦垼鏀藉☉?/span>
 </div>
 <div class="header-actions">
-<a href="https://t.me/AimiliVPN" target="_blank" class="btn-telegram">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-Telegram 缂傚洢鍊楃划?
-</a>
+
 <div class="dropdown-content" id="adminDropdown">
 <a onclick="openCredentialsModal()">閻犳劧绠戣ぐ鍧楀礄椤撶喎绁?/a>
 <a onclick="openNetworkModal()">缂傚啯鍨圭划鍓佹媼閸撗呮瀭</a>
