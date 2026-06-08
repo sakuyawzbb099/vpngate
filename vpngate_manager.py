@@ -2720,12 +2720,14 @@ function disconnectChannel(idx) {
 function setChannelCountry(idx, val) {
   var chList = channels.length ? channels : sampleChannels;
   if (chList[idx]) chList[idx].lock_country = val;
+  renderChannels();
   // Real API: fetch('./api/set_channel_country', {method:'POST', body: JSON.stringify({channel:idx, country:val})});
 }
 
 function setChannelAsn(idx, val) {
   var chList = channels.length ? channels : sampleChannels;
   if (chList[idx]) chList[idx].lock_asn = val;
+  renderChannels();
   // Real API: fetch('./api/set_channel_asn', {method:'POST', body: JSON.stringify({channel:idx, asn:val})});
 }
 
