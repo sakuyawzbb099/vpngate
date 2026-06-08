@@ -2439,7 +2439,7 @@ var COUNTRIES = [
   {name:'瑞士',short:'CH'},{name:'瑞典',short:'SE'},{name:'挪威',short:'NO'},{name:'意大利',short:'IT'},{name:'西班牙',short:'ES'}
 ];
 
-var countryOptions = ['','自动','日本','美国','新加坡','韩国','英国','德国','法国','加拿大','澳大利亚','荷兰','香港','台湾','印度','巴西','俄罗斯','瑞士','瑞典','挪威','意大利','西班牙'];
+function getCountryOptions() { var cm={}; (nodes.length?nodes:sampleNodes).forEach(function(n){ var c=n.country||''; if(c)cm[c]=1; }); var keys=Object.keys(cm).sort(); return ['','自动'].concat(keys); }
 var asnOptions = ['','自动','AS4713','AS16509','AS15169','AS8075','AS45102','AS16276','AS24940','AS12876','AS4766'];
 
 // ===== State =====
@@ -2459,7 +2459,7 @@ for (var si = 0; si < 6; si++) {
     index: si, exit_ip: '203.104.'+(209+Math.floor(si/3))+'.'+(15+si*7),
     asn: 'AS'+(4000+si*113), asn_org: ['NTT Communications','Amazon AWS','Google Cloud','Microsoft Azure','SoftBank','KDDI'][si],
     speed: (Math.random()*45+5).toFixed(1), speed_unit:'MB/s', latency: Math.floor(Math.random()*180+25),
-    online: si<6, connecting:false, country:['日本','美国','新加坡','韩国','英国','德国'][si],
+    online: false, connecting:false, country:['日本','美国','新加坡','韩国','英国','德国'][si],
     lock_country:'', lock_asn:''
   });
 }
@@ -2482,6 +2482,7 @@ async function load() {
     var r = await fetch('./api/nodes');
     var d = await r.json();
     nodes = d.nodes || [];
+    nodes = nodes.map(function(n){ if(n.latency==null&&n.latency_ms!=null)n.latency=n.latency_ms; if(n.latency==null&&n.ping!=null)n.latency=n.ping; if(!n.name)n.name=n.host_name||n.id||''; if(!n.status)n.status=n.probe_status||(n.active?'available':'pending'); return n; });
     state = d.state || {};
     $('systemStatus').innerHTML = '<span class=\"dot\"></span>系统运行中';
     updateCountryFilter();
@@ -2517,8 +2518,8 @@ function updateCountryFilter() {
 // ===== Render Channels =====
 function buildCountrySelect(selected) {
   var h = '';
-  for (var i=0;i<countryOptions.length;i++) {
-    var v=countryOptions[i], label=v||'自动', val=v||'', sel=(val===selected)?' selected':'';
+  for (var i=0;i<getCountryOptions().length;i++) {
+    var v=getCountryOptions()[i], label=v||'自动', val=v||'', sel=(val===selected)?' selected':'';
     h += '<option value="'+val+'"'+sel+'>'+label+'</option>';
   }
   return h;
@@ -3010,7 +3011,7 @@ setInterval(async function() {
     try {
       var r=await fetch('./api/nodes');
       var d=await r.json();
-      if (d.nodes) { nodes=d.nodes||[]; state=d.state||{}; updateCountryFilter(); renderTable(); }
+      if (d.nodes) { nodes=(d.nodes||[]).map(function(n){ var nn=Object.assign({},n); if(nn.latency==null&&nn.latency_ms!=null)nn.latency=nn.latency_ms; if(nn.latency==null&&nn.ping!=null)nn.latency=nn.ping; if(!nn.name)nn.name=nn.host_name||nn.id||''; if(!nn.status)nn.status=nn.probe_status||(nn.active?'available':'pending'); return nn; }); state=d.state||{}; updateCountryFilter(); renderTable(); }
     } catch(e) {}
   }
 }, 10000);
