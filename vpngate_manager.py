@@ -1509,15 +1509,22 @@ def connect_channel(channel_idx: int, node_id: str) -> str:
             raise ValueError(f"Channel {channel_idx}: Node not found: {node_id}")
         config_text = node.get("config_text", "") or ""
         if not config_text:
-            cp = Path(node.get("config_file", "") or "")
-            if cp.exists():
-                config_text = cp.read_text(encoding="utf-8")
+            cfg_path = Path(node.get("config_file", "") or "")
+            if cfg_path.exists():
+                config_text = cfg_path.read_text(encoding="utf-8")
         if not config_text:
             raise ValueError(f"No config for node {node_id}")
-        ok, msg, proc = run_openvpn_until_ready(config_text, keep_alive=True, route_nopull=False, dev=f"tun{channel_idx}")
-        if ok and proc:
-            ch_processes[channel_idx] = proc
-            setup_policy_routing(f"tun{channel_idx}", 100 + channel_idx)
+        # Write config to a temp file (OpenVPN --config requires a file path)
+        channel_config_dir = DATA_DIR / "channel_configs"
+        channel_config_dir.mkdir(exist_ok=True, parents=True)
+        config_path = channel_config_dir / f"ch{channel_idx}.ovpn"
+        config_path.write_text(config_text, encoding="utf-8")
+        ok, msg, proc = run_openvpn_until_ready(str(config_path), keep_alive=True, route_nopull=True, dev=f"tun{channel_idx}")
+        if not ok or proc is None:
+            msg = msg or "OpenVPN failed to connect"
+            raise RuntimeError(msg)
+        ch_processes[channel_idx] = proc
+        setup_policy_routing(f"tun{channel_idx}", 100 + channel_idx)
         return msg
     finally:
         ch_connecting[channel_idx] = False
