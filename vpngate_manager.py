@@ -141,6 +141,7 @@ CHANNEL_BASE_PORT = 7928
 ch_processes = [None] * MAX_CHANNELS
 ch_node_ids = [''] * MAX_CHANNELS
 ch_connecting = [False] * MAX_CHANNELS
+ch_tun_ids = [-1] * MAX_CHANNELS
 
 last_collector_heartbeat = 0.0
 last_checker_heartbeat = 0.0
@@ -956,7 +957,7 @@ def kill_existing_openvpn_processes() -> None:
             if "openvpn" not in executable and "openvpn" not in cmdline.lower():
                 continue
             # Skip: don't kill channel OpenVPN processes
-            if any(f"dev tun{chi}" in cmdline for chi in range(MAX_CHANNELS)):
+            if any(f"dev tun{100 + chi}" in cmdline for chi in range(MAX_CHANNELS)):
                 continue
             if any(marker and marker in cmdline for marker in own_markers):
                 try:
@@ -1219,6 +1220,22 @@ def get_free_test_index() -> int:
 def release_test_index(idx: int) -> None:
     with test_indexes_lock:
         active_test_indexes.discard(idx)
+
+# Channel TUN allocation — dynamically picks free TUN from pool (200+)
+# Routing table uses the same number as the TUN device for 1:1 mapping.
+def alloc_channel_tun(channel_idx: int) -> int:
+    """Allocate next available channel TUN from the dedicated pool (200+)."""
+    with test_indexes_lock:
+        for idx in range(200, 300):
+            if idx not in active_test_indexes:
+                active_test_indexes.add(idx)
+                return idx
+        raise RuntimeError("No available TUN index for channel connection")
+
+
+def free_channel_tun(tun_idx: int) -> None:
+    with test_indexes_lock:
+        active_test_indexes.discard(tun_idx)
 
 def test_config_path(node_id: str) -> Path:
     safe_id = safe_name(node_id)
@@ -1519,12 +1536,18 @@ def connect_channel(channel_idx: int, node_id: str) -> str:
         channel_config_dir.mkdir(exist_ok=True, parents=True)
         config_path = channel_config_dir / f"ch{channel_idx}.ovpn"
         config_path.write_text(config_text, encoding="utf-8")
-        ok, msg, proc = run_openvpn_until_ready(str(config_path), keep_alive=True, route_nopull=True, dev=f"tun{channel_idx}")
+        # Allocate a free TUN device dynamically
+        tun_idx = alloc_channel_tun(channel_idx)
+        ch_tun_ids[channel_idx] = tun_idx
+        ok, msg, proc = run_openvpn_until_ready(str(config_path), keep_alive=True, route_nopull=True, dev=f"tun{tun_idx}")
         if not ok or proc is None:
             msg = msg or "OpenVPN failed to connect"
+            if ch_tun_ids[channel_idx] >= 0:
+                free_channel_tun(ch_tun_ids[channel_idx])
+                ch_tun_ids[channel_idx] = -1
             raise RuntimeError(msg)
         ch_processes[channel_idx] = proc
-        setup_policy_routing(f"tun{channel_idx}", 100 + channel_idx)
+        setup_policy_routing(f"tun{tun_idx}", tun_idx)
         return msg
     finally:
         ch_connecting[channel_idx] = False
@@ -1534,11 +1557,17 @@ def disconnect_channel(channel_idx: int) -> str:
     if channel_idx < 0 or channel_idx >= MAX_CHANNELS:
         raise ValueError(f"Invalid channel: {channel_idx}")
     with lock:
+        tun_idx = ch_tun_ids[channel_idx]
         if ch_processes[channel_idx]:
             stop_process(ch_processes[channel_idx])
             ch_processes[channel_idx] = None
             ch_node_ids[channel_idx] = ""
-        cleanup_policy_routing(100 + channel_idx)
+            # Release the allocated TUN device
+            if ch_tun_ids[channel_idx] >= 0:
+                free_channel_tun(ch_tun_ids[channel_idx])
+                ch_tun_ids[channel_idx] = -1
+        if tun_idx >= 0:
+            cleanup_policy_routing(tun_idx)
     return "disconnected"
 
 
@@ -3572,7 +3601,7 @@ class Handler(BaseHTTPRequestHandler):
                 if "config_text" in stripped:
                     del stripped["config_text"]
                 stripped_nodes.append(stripped)
-            ch_status = [{"index":i,"node_id":ch_node_ids[i],"online":ch_processes[i] is not None and ch_processes[i].poll() is None,"connecting":ch_connecting[i],"port":CHANNEL_BASE_PORT+i} for i in range(MAX_CHANNELS)]
+            ch_status = [{"index":i,"node_id":ch_node_ids[i],"online":ch_processes[i] is not None and ch_processes[i].poll() is None,"connecting":ch_connecting[i],"port":CHANNEL_BASE_PORT+i,"tun":ch_tun_ids[i]} for i in range(MAX_CHANNELS)]
             self.send_json({"nodes": stripped_nodes, "state": get_state(), "channels": ch_status})
         elif effective_path.startswith("/configs/"):
             filename = urllib.parse.unquote(effective_path.removeprefix("/configs/"))
